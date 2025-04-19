@@ -1,0 +1,318 @@
+site_name: Institute Automation Documentation
+site_url: https://yourdomain.com
+site_author: Institute Team
+site_description: Documentation for Institute Automation
+
+repo_url: https://github.com/SWE-Project-IAS/Institute-Automation-System
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  logo: assets/logo.png
+  features:
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - content.tabs
+    - content.tooltips
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - search.share
+    - toc.follow
+
+  palette:
+    - scheme: default
+      primary: blue
+      accent: red
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: red
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
+extra_css:
+  - stylesheets/custom.css
+
+nav:
+  - Home: index.md
+  - Technical Documentation:
+      - Frontend:
+          - Components:
+              - Announcements:
+                  - Announcement Wrapper: technical_documentation/frontend/components/Announcements/announcemetWrapper.md
+                  - Faculty Announcements: technical_documentation/frontend/components/Announcements/facultyAnnouncements.md
+                  - Student Announcements: technical_documentation/frontend/components/Announcements/studentAnnouncements.md
+                  - Unauthorized: technical_documentation/frontend/components/Announcements/unauth.md
+              - Assignment:
+                  - Assignment Details: technical_documentation/frontend/components/Assignment/AssignmentDetails.md
+                  - Assignment Landing: technical_documentation/frontend/components/Assignment/AssignmentLanding.md
+                  - Assignment List: technical_documentation/frontend/components/Assignment/AssignmentList.md
+                  - Create Assignment: technical_documentation/frontend/components/Assignment/CreateAssignment.md
+                  - Data: technical_documentation/frontend/components/Assignment/data.md
+                  - Edit Assignment: technical_documentation/frontend/components/Assignment/EditAssignment.md
+                  - Faculty Assignment Submissions: technical_documentation/frontend/components/Assignment/FacultyAssignmentSubmissions.md
+              - Attendance:
+                  - Attendance Components:
+                      - Add Attendance: technical_documentation/frontend/components/Attendence/attendanceComponents/AddAttendance.md
+                      - Add or Update: technical_documentation/frontend/components/Attendence/attendanceComponents/AddOrUpdate.md
+                      - Attendance Approval Dashboard: technical_documentation/frontend/components/Attendence/attendanceComponents/AttendanceApprovalDashboard.md
+                      - Calendar: technical_documentation/frontend/components/Attendence/attendanceComponents/Calendar.md
+                      - Course: technical_documentation/frontend/components/Attendence/attendanceComponents/Course.md
+                      - Course Stats: technical_documentation/frontend/components/Attendence/attendanceComponents/CourseStats.md
+                      - Date Input: technical_documentation/frontend/components/Attendence/attendanceComponents/DateInput.md
+                      - My Courses: technical_documentation/frontend/components/Attendence/attendanceComponents/MyCourses.md
+                      - Searchable Student Dropdown: technical_documentation/frontend/components/Attendence/attendanceComponents/SearchableStudentDropdown.md
+                      - Site Alert: technical_documentation/frontend/components/Attendence/attendanceComponents/SiteAlert.md
+                      - Update Attendance: technical_documentation/frontend/components/Attendence/attendanceComponents/UpdateAttendance.md
+                  - Attendance Course Page: technical_documentation/frontend/components/Attendence/AttendanceCoursePage.md
+                  - Attendance Landing Page: technical_documentation/frontend/components/Attendence/AttendanceLandingPage.md
+              - Complaint Section:
+                  - Assign Form: technical_documentation/frontend/components/complaintSection/AssignForm.md
+                  - Common:
+                      - Complaint List: technical_documentation/frontend/components/complaintSection/common/ComplaintList.md
+                  - Complaint Details: technical_documentation/frontend/components/complaintSection/ComplaintDetails.md
+                  - Index: technical_documentation/frontend/components/complaintSection/index.md
+                  - New Complaint Form: technical_documentation/frontend/components/complaintSection/newComplaintForm.md
+                  - Support Staff:
+                      - Support Staff Management: technical_documentation/frontend/components/complaintSection/supportStaff/supportStaffManagement.md
+                  - Tabs:
+                      - In Progress Complaints: technical_documentation/frontend/components/complaintSection/tabs/inProgressComplaints.md
+                      - My Complaints: technical_documentation/frontend/components/complaintSection/tabs/MyComplaints.md
+                      - New Complaint Selection: technical_documentation/frontend/components/complaintSection/tabs/NewComplaintSelection.md
+                      - Pending Complaints: technical_documentation/frontend/components/complaintSection/tabs/PendingComplaints.md
+                      - Resolved Complaints: technical_documentation/frontend/components/complaintSection/tabs/ResolvedComplaints.md
+              - Course Feedback:
+                  - Feedback Admin: technical_documentation/frontend/components/courseFeedback/FeedbackAdmin.md
+                  - Feedback Admin Select: technical_documentation/frontend/components/courseFeedback/FeedbackAdminSelect.md
+                  - Feedback Faculty: technical_documentation/frontend/components/courseFeedback/FeedbackFaculty.md
+                  - Feedback Faculty Select: technical_documentation/frontend/components/courseFeedback/FeedbackFacultySelect.md
+                  - Feedback Student Select: technical_documentation/frontend/components/courseFeedback/FeedbackStudentSelect.md
+              - Course Registration: technical_documentation/frontend/components/CourseRegistration.md
+              - Course Students:
+                  - Course Student: technical_documentation/frontend/components/courseStudents/courseStudent.md
+              - Document Section:
+                  - Admin:
+                      - Admin Layout: technical_documentation/frontend/components/documentSection/admin/AdminLayout.md
+                      - Application Details: technical_documentation/frontend/components/documentSection/admin/ApplicationDetails.md
+                      - Applications List: technical_documentation/frontend/components/documentSection/admin/ApplicationsList.md
+                      - View Application: technical_documentation/frontend/components/documentSection/admin/ViewApplication.md
+                  - Document Layout: technical_documentation/frontend/components/documentSection/DocumentLayout.md
+                  - Fee Receipt PDF: technical_documentation/frontend/components/documentSection/FeeReceiptPDF.md
+                  - ID Card PDF: technical_documentation/frontend/components/documentSection/IDCardPDF.md
+                  - PDF Generator: technical_documentation/frontend/components/documentSection/PDFGenerator.md
+                  - PDF Preview: technical_documentation/frontend/components/documentSection/PDFPreview.md
+                  - Transcript PDF: technical_documentation/frontend/components/documentSection/TranscriptPDF.md
+              - Drop Course:
+                  - Drop: technical_documentation/frontend/components/dropCourse/drop.md
+                  - Drop Course Admin: technical_documentation/frontend/components/dropCourse/dropCourseAdmin.md
+              - Hostel Leave:
+                  - Hostel Leave: technical_documentation/frontend/components/HostelLeave/HostelLeave.md
+                  - Hostel Leave Admin: technical_documentation/frontend/components/HostelLeave/HostelLeaveAdmin.md
+                  - Hostel Leave Student: technical_documentation/frontend/components/HostelLeave/HostelLeaveStudent.md
+              - Hostel Mess:
+                  - Admin Subscription Requests: technical_documentation/frontend/components/HostelMess/AdminSubscriptionRequests.md
+                  - Mess: technical_documentation/frontend/components/HostelMess/Mess.md
+                  - Mess Subscription Service: technical_documentation/frontend/components/HostelMess/messSubscriptionService.md
+                  - Student Subscription Form: technical_documentation/frontend/components/HostelMess/StudentSubscriptionForm.md
+              - Hostel Transfer:
+                  - Admin:
+                      - Approved Requests: technical_documentation/frontend/components/HostelTransfer/admin/ApprovedRequests.md
+                      - Hostel Transfer Admin: technical_documentation/frontend/components/HostelTransfer/admin/HostelTransferAdmin.md
+                      - Pending Requests: technical_documentation/frontend/components/HostelTransfer/admin/PendingRequests.md
+                      - Rejected Requests: technical_documentation/frontend/components/HostelTransfer/admin/RejectedRequests.md
+                  - Hostel Transfer: technical_documentation/frontend/components/HostelTransfer/HostelTransfer.md
+                  - Student:
+                      - Approved Requests: technical_documentation/frontend/components/HostelTransfer/student/ApprovedRequests.md
+                      - Hostel Transfer Student: technical_documentation/frontend/components/HostelTransfer/student/HostelTransferStudent.md
+                      - Pending Requests: technical_documentation/frontend/components/HostelTransfer/student/PendingRequests.md
+                      - Rejected Requests: technical_documentation/frontend/components/HostelTransfer/student/RejectedRequests.md
+              - Login Page:
+                  - Login: technical_documentation/frontend/components/LoginPage/Login.md
+              - My Courses:
+                  - Completed Courses: technical_documentation/frontend/components/myCourses/CompletedCourses.md
+                  - Course Wrapper: technical_documentation/frontend/components/myCourses/courseWrapper.md
+                  - Faculty Course: technical_documentation/frontend/components/myCourses/facultyCourse.md
+                  - My Course: technical_documentation/frontend/components/myCourses/myCourse.md
+                  - Unauthorized: technical_documentation/frontend/components/myCourses/unauthorized.md
+              - Navbar: technical_documentation/frontend/components/Navbar.md
+              - Profile Page:
+                  - Academic Admin Profile: technical_documentation/frontend/components/ProfilePage/academicAdminProfile.md
+                  - Faculty Profile: technical_documentation/frontend/components/ProfilePage/facultyProfile.md
+                  - Hostel Admin Profile: technical_documentation/frontend/components/ProfilePage/hostelAdminProfile.md
+                  - Student Profile: technical_documentation/frontend/components/ProfilePage/studentProfile.md
+              - Registration:
+                  - Admin Registration: technical_documentation/frontend/components/registration/admin_reg.md
+                  - Faculty Registration Page: technical_documentation/frontend/components/registration/faculty_registration_page.md
+                  - Faculty Registration Dashboard: technical_documentation/frontend/components/registration/faculty_reg_dashboard.md
+              - Sidebar:
+                  - Academic Admin: technical_documentation/frontend/components/Sidebar/AcadAdmin.md
+                  - Faculty: technical_documentation/frontend/components/Sidebar/Faculty.md
+                  - Hostel Admin: technical_documentation/frontend/components/Sidebar/HostelAdmin.md
+                  - Sidebar: technical_documentation/frontend/components/Sidebar/Sidebar.md
+                  - Student: technical_documentation/frontend/components/Sidebar/Student.md
+              - Time Table:
+                  - Timetable: technical_documentation/frontend/components/TimeTable/timetable.md
+          - Context:
+              - Role Context: technical_documentation/frontend/context/Rolecontext.md
+          - Pages:
+              - Documents:
+                  - Admin:
+                      - Admin Fee Control: technical_documentation/frontend/pages/Documents/admin/AdminFeeControl.md
+                      - Document Access Control: technical_documentation/frontend/pages/Documents/admin/DocumentAccessControl.md
+                      - Document Manager: technical_documentation/frontend/pages/Documents/admin/DocumentManager.md
+                  - Bonafide: technical_documentation/frontend/pages/Documents/Bonafide.md
+                  - Fee Receipt: technical_documentation/frontend/pages/Documents/FeeReceipt.md
+                  - ID Card: technical_documentation/frontend/pages/Documents/IDCard.md
+                  - Index: technical_documentation/frontend/pages/Documents/index.md
+                  - Others Form: technical_documentation/frontend/pages/Documents/OthersForm.md
+                  - Passport: technical_documentation/frontend/pages/Documents/Passport.md
+                  - Transcript: technical_documentation/frontend/pages/Documents/Transcript.md
+              - Fee Payment: technical_documentation/frontend/pages/FeePayment.md
+              - Profile Page: technical_documentation/frontend/pages/ProfilePage.md
+          - Utils:
+              - Convert Image to Base64: technical_documentation/frontend/utils/convertImageToBase64.md
+              - New Request: technical_documentation/frontend/utils/newRequest.md
+      - Backend:
+          - Controllers:
+              - Academic Admin Controller: technical_documentation/backend/controllers/acadAdmin_controller.md
+              - Announcements Controller: technical_documentation/backend/controllers/announcements_controller.md
+              - Assignment Controller: technical_documentation/backend/controllers/assignment_controller.md
+              - Attendance Controller: technical_documentation/backend/controllers/attendance_controller.md
+              - Authentication Controller: technical_documentation/backend/controllers/auth_controller.md
+              - Complaints Controller: technical_documentation/backend/controllers/complaints_controller.md
+              - Create Course Controller: technical_documentation/backend/controllers/createCourse_controller.md
+              - Faculty Course Controller: technical_documentation/backend/controllers/facultyCourse_controller.md
+              - Faculty Controller: technical_documentation/backend/controllers/faculty_controller.md
+              - Hostel Controller: technical_documentation/backend/controllers/hostel_controller.md
+              - Student Controller: technical_documentation/backend/controllers/student_controller.md
+          - Database:
+              - MongoDB: technical_documentation/backend/database/mongoDb.md
+          - Helpers:
+              - Multer Complaints: technical_documentation/backend/helpers/multer_complaints.md
+          - Middleware:
+              - Authentication Middleware: technical_documentation/backend/middleware/auth_middleware.md
+              - Meal Middleware: technical_documentation/backend/middleware/meal_middleware.md
+          - Models:
+              - Academic Admin Model: technical_documentation/backend/models/academic_admin_model.md
+              - Assignment Model: technical_documentation/backend/models/assignment_model.md
+              - Attendance Model: technical_documentation/backend/models/attendance_model.md
+              - Complaint Models: technical_documentation/backend/models/complaint_models.md
+              - Course Drop Request Model: technical_documentation/backend/models/course_drop_request_model.md
+              - Course Model: technical_documentation/backend/models/course_model.md
+              - Document Model: technical_documentation/backend/models/document_model.md
+              - Faculty Model: technical_documentation/backend/models/faculty_model.md
+              - Feedback Model: technical_documentation/backend/models/feedback.model.md
+              - Fees Model: technical_documentation/backend/models/fees.model.md
+              - Hostel Admin Model: technical_documentation/backend/models/hostelAdmin.model.md
+              - Hotel Model: technical_documentation/backend/models/hotel.model.md
+              - Meals Model: technical_documentation/backend/models/meals.model.md
+              - Student Model: technical_documentation/backend/models/student.model.md
+              - User Model: technical_documentation/backend/models/user.model.md
+          - Routes:
+              - Academic Admin Route: technical_documentation/backend/routes/AcadAdmin_Route.md
+              - Assignment Route: technical_documentation/backend/routes/assignment_route.md
+              - Attendance Route: technical_documentation/backend/routes/Attendance_Route.md
+              - Authentication Route: technical_documentation/backend/routes/Auth_Route.md
+              - Complaints Route: technical_documentation/backend/routes/Complaints_Route.md
+          - Tests:
+              - Academic Admin Controller Test: technical_documentation/backend/tests/acadAdmin_controller_test.md
+              - Announcements Controller Test: technical_documentation/backend/tests/announcements_controller_test.md
+              - Assignment Controller Test: technical_documentation/backend/tests/assignment_controller_test.md
+              - Attendance Controller Test: technical_documentation/backend/tests/attendance_controller_test.md
+              - Authentication Controller Test: technical_documentation/backend/tests/auth_controller_test.md
+              - Authentication Middleware Test: technical_documentation/backend/tests/auth_middleware_test.md
+              - Complaints Controller Test: technical_documentation/backend/tests/complaints_controller_test.md
+              - Create Course Controller Test: technical_documentation/backend/tests/createCourse_controller_test.md
+              - Faculty Course Controller Test: technical_documentation/backend/tests/facultyCourse_controller_test.md
+              - Faculty Controller Test: technical_documentation/backend/tests/faculty_controller_test.md
+              - Hostel Controller Test: technical_documentation/backend/tests/hostel_controller_test.md
+              - Meal Middleware Test: technical_documentation/backend/tests/Meal_middleware_test.md
+              - Student Controller Test: technical_documentation/backend/tests/student_controller_test.md
+
+  - User Documentation:
+      - Academic Admin:
+          - Documents:
+              - Application Details: user_documentation/acad_admin/Documents/Application Details/Application_details.md
+              - Application Manager: user_documentation/acad_admin/Documents/Application Manager/Admin_application_manager.md
+              - Review Application: user_documentation/acad_admin/Documents/Review Application/Review_application.md
+          - Fee Management:
+              - Fee Control: user_documentation/acad_admin/Fee_Management/Fee_Control.md
+      - Student:
+          - Complaint:
+              - Complaint: user_documentation/student/Complaint/Complaint.md
+          - Course:
+              - Active Courses:
+                  - Active Courses: user_documentation/student/Course/Active_Courses/Active_Courses.md
+                  - Assignment:
+                      - Assignment Page: user_documentation/student/Course/Active_Courses/Assignment/assignmentPage.md
+                  - Attendance:
+                      - Attendance: user_documentation/student/Course/Active_Courses/Attendance/Attendance.md
+                  - Drop Course:
+                      - Drop Courses: user_documentation/student/Course/Active_Courses/Drop_Course/Drop_Courses.md
+                  - Time Table:
+                      - Time Table Page: user_documentation/student/Course/Active_Courses/Time_Table/TimeTablePage.md
+              - Registration:
+                  - Registration: user_documentation/student/Course/Registration/Registration.md
+          - Document:
+              - All Document:
+                  - Documents: user_documentation/student/Document/All_Document/Documents.md
+              - Bonafide:
+                  - Bonafide: user_documentation/student/Document/Bonafide/bonafide.md
+                  - Bonafide Status: user_documentation/student/Document/Bonafide/bonafide_status.md
+              - Fee Receipt:
+                  - Fee Receipt: user_documentation/student/Document/Fee_Receipt/Fee_receipt.md
+              - ID Card:
+                  - ID Card Page: user_documentation/student/Document/ID_Card/idcardPage.md
+              - Other Forms:
+                  - Other Forms: user_documentation/student/Document/Other_Forms/OtherForms.md
+              - Passport:
+                  - Passport Page: user_documentation/student/Document/Passport/passportPage.md
+              - Transcript:
+                  - Transcript Page: user_documentation/student/Document/Transcript/transcriptPage.md
+          - Fee Payment:
+              - Fee Payment: user_documentation/student/Fee_Payment/Fee_Payment/Fee_Payment.md
+          - Hostel:
+              - Hostel Leave:
+                  - Hostel Leave: user_documentation/student/Hostel/HostelLeave/HostelLeave.md
+              - Hostel Mess:
+                  - Hostel Mess: user_documentation/student/Hostel/HostelMess/HostelMess.md
+              - Hostel Transfer:
+                  - Hostel Transfer: user_documentation/student/Hostel/HostelTransfer/HostelTransfer.md
+          - Profile:
+              - View Profile: user_documentation/student/Profile/View_Profile/View_profile.md
+  - Course Instructor: CourseInstructor.md
+  - Team: team.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.emoji
+  - pymdownx.tabbed
+
+plugins:
+  - search
+  - awesome-pages
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/SWE-Project-IAS
+    - icon: fontawesome/brands/facebook
+      link: https://www.facebook.com/groups/1064642068795485
+
+copyright: "Copyright 2025 IITG CS345"
