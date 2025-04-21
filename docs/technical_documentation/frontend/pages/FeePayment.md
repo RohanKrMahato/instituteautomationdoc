@@ -1,199 +1,540 @@
 # FeePayment Component
 
 ## Overview
-The `FeePayment` component is a React-based front-end module designed for handling academic fee payments at IIT Guwahati. It integrates with the Razorpay payment gateway, displays student details, fee breakdowns, and payment statuses, and allows users to download fee receipts as PDFs. The component is styled using Tailwind CSS and follows a modular, responsive design.
+
+The `FeePayment` component is a React functional component responsible for:
+- Fetching and displaying student fee details.
+- Facilitating online fee payments via Razorpay.
+- Recording payment details in the backend.
+- Generating and downloading fee receipts as PDFs.
+- Handling various UI states (loading, error, success, etc.).
+
+It uses modern React hooks, Tanstack Query for data fetching, and integrates with external libraries like `axios`, `react-hot-toast`, and `@react-pdf/renderer`.
+
+---
 
 ## Dependencies
+
+The component relies on the following libraries and utilities:
 - **React**: For building the UI and managing state.
-- **Razorpay**: For processing payments via the checkout.js script.
-- **Axios**: For making HTTP requests to the backend.
+- **@tanstack/react-query**: For data fetching and mutation handling.
+- **axios**: For making HTTP requests to the backend.
+- **react-hot-toast**: For displaying toast notifications.
 - **@react-pdf/renderer**: For generating PDF receipts.
-- **Tailwind CSS**: For styling the component.
+- **react-router-dom**: For navigation.
+- **Razorpay**: For payment processing via the Razorpay checkout script.
+
+---
 
 ## Component Structure
-The component is structured into several sections:
-1. **Student Identification**: Displays student details (name, roll number, programme, semester, and photo).
-2. **Fee Overview**: Summarizes the fee status (total, paid, due) with a payment action button.
-3. **Fee Breakdown**: Lists detailed fee particulars with amounts.
-4. **Payment Confirmation**: Shows payment history and allows downloading receipts (visible post-payment).
+
+The component is structured as follows:
+1. **State Management**: Uses `useState` for local state and `useQuery`/`useMutation` for data fetching and mutations.
+2. **Helper Functions**: Utility functions for loading scripts, formatting currency, and calculating academic years.
+3. **UI Rendering**: Conditionally renders based on loading, error, or data states.
+4. **Event Handlers**: Handles payment initiation and receipt downloading.
+
+---
 
 ## Code Explanation
 
-### Imports
+### 1. Imports and Setup
+
+The component imports necessary dependencies and utilities.
+
 ```jsx
 import React, { useState, useEffect } from "react";
 import { pdf } from "@react-pdf/renderer";
 import FeeReceiptPDF from "../components/documentSection/FeeReceiptPDF";
-import axios from 'axios';
+import axios from "axios";
+import newRequest from "../utils/newRequest";
+import { useQuerykon, useMutation } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
+import { useNavigate } from 'react-router-dom';
 ```
-- Imports React hooks for state and lifecycle management.
-- Imports `pdf` for generating PDF documents.
-- Imports a custom `FeeReceiptPDF` component for receipt generation.
-- Imports `axios` for API calls to the backend.
 
-### Helper Function: `loadRazorpayScript`
+- `FeeReceiptPDF`: A custom component for rendering PDF receipts.
+- `newRequest`: A custom axios instance with pre-configured base URL and headers.
+- `useQuery` and `useMutation`: For fetching fee data and recording payments.
+- `toast`: For user notifications.
+- `useNavigate`: For programmatic navigation.
+
+---
+
+### 2. Helper Functions
+
+#### `loadRazorpayScript`
+
+Loads the Razorpay checkout script dynamically.
+
 ```jsx
 const loadRazorpayScript = (src) => {
-    return new Promise((resolve) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = () => resolve(true);
-        script.onerror = () => resolve(false);
-        document.body.appendChild(script);
-    });
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+```jsx
+const RAZORPAY_SCRIPT_URL = "https://checkout.razorpay.com/v1/checkout.js";
+```
+
+- Creates a script element and appends it to the document body.
+- Resolves a promise with `true` on successful load, `false` on error.
+
+#### `getCurrentAcademicYear`
+
+Calculates the current academic year based on the month.
+
+```jsx
+const getCurrentAcademicYear = () => {
+  const today = new Date();
+  const month = today.getMonth();
+  const year = today.getFullYear();
+  return month < 6 ? `${year - 1}-${year}` : `${year}-${year + 1}`;
 };
-const RAZORPAY_SCRIPT_URL = 'https://checkout.razorpay.com/v1/checkout.js';
 ```
-- Dynamically loads the Razorpay checkout.js script.
-- Returns a Promise resolving to `true` on successful load, `false` on failure.
-- Appends the script to the document body.
 
-### State Management
-```jsx
-const [isPaid, setIsPaid] = useState(false);
-const [paymentDetails, setPaymentDetails] = useState(null);
-const [isLoading, setIsLoading] = useState(true);
-const [isDownloading, setIsDownloading] = useState(false);
-```
-- `isPaid`: Tracks payment status (true if paid).
-- `paymentDetails`: Stores transaction details (e.g., transaction ID, amount).
-- `isLoading`: Manages loading state during API calls or payment processing.
-- `isDownloading`: Prevents multiple PDF downloads by tracking download state.
+- If the month is before July (month < 6), the academic year is `year-1` to `year`.
+- Otherwise, it’s `year` to `year+1`.
 
-### Static Data
-```jsx
-const student = { ... }; // Student details
-const feeParticularsData = [ ... ]; // Fee breakdown items
-const calculatedTotal = feeParticularsData.reduce(...);
-const adjustmentAmount = 0.00;
-const payableAmount = (calculatedTotal - adjustmentAmount) * 0 + 2; // DEV ONLY
-const feeDataForPDF = [ ... ];
-const feeSummary = { ... };
-```
-- `student`: Hardcoded student data (e.g., name, roll number).
-- `feeParticularsData`: Array of fee items (e.g., Tuition Fees, Hostel Rent).
-- `calculatedTotal`: Sums all fee amounts.
-- `adjustmentAmount`: Any fee adjustments (set to 0).
-- `payableAmount`: Net amount to pay (set to 2 INR for testing).
-- `feeDataForPDF`: Data for PDF generation, including totals and adjustments.
-- `feeSummary`: Summary for the fee overview table (semester, fee type, status).
+---
 
-### Effect Hook: `useEffect`
+### 3. State and Effects
+
+#### User ID Extraction
+
+Extracts the user ID from `localStorage` on component mount.
+
 ```jsx
+const [userId, setUserId] = useState(null);
+
 useEffect(() => {
-    const fetchFeeStatus = async () => {
-        setIsLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 800)); // Simulated delay
-        const alreadyPaid = false; // Simulated initial state
-        setIsPaid(alreadyPaid);
-        if (alreadyPaid) {
-            setPaymentDetails({ ... }); // Mock paid details
-        } else {
-            setPaymentDetails(null);
-        }
-        setIsLoading(false);
-    };
-    fetchFeeStatus();
+  try {
+    const { data: userData } = JSON.parse(localStorage.getItem("currentUser"));
+    const { userId } = userData.user;
+    setUserId(userId);
+    console.log("User ID set:", userId);
+  } catch (error) {
+    console.error("Error parsing user data from localStorage:", error);
+  }
 }, []);
 ```
-- Runs on component mount to fetch initial payment status.
-- Simulates an API call with an 800ms delay.
-- Sets `isPaid` and `paymentDetails` based on the simulated response.
 
-### Payment Handler: `handlePayFee`
+- Parses the `currentUser` item from `localStorage`.
+- Sets the `userId` state for use in API calls.
+- Logs errors if parsing fails.
+
+#### Fee Data Fetching
+
+Fetches student fee data using `useQuery`.
+
+```jsx
+const {
+  data: feeData,
+  isLoading,
+  error,
+  refetch,
+} = useQuery({
+  queryKey: ["studentFeeData", userId],
+  queryFn: async () => {
+    const response = await newRequest.get(`/student/${userId}/fees`);
+    return response.data;
+  },
+  enabled: !!userId,
+  retry: 1,
+  onError: (error) => {
+    console.error("Failed to fetch fee data:", error);
+    if (error.response?.status !== 404) {
+      toast.error("Failed to load fee details");
+    }
+  },
+});
+```
+
+- `queryKey`: Ensures cache uniqueness based on `userId`.
+- `queryFn`: Fetches fee data from the backend.
+- `enabled`: Only runs if `userId` is available.
+- `retry`: Limits retries to 1.
+- `onError`: Shows a toast error unless the error is a 404 (fee structure not available).
+
+---
+
+### 4. Payment Processing
+
+#### `recordPayment` Mutation
+
+Records payment details in the backend.
+
+```jsx
+const recordPayment = useMutation({
+  mutationFn: (paymentData) => {
+    console.log("Sending payment data to backend:", paymentData);
+    return newRequest.post(`/student/${userId}/fees/payment`, paymentData);
+  },
+  onSuccess: (response, paymentData) => {
+    console.log("Payment record success response:", response.data);
+    toast.success("Payment recorded successfully");
+    navigate(`/documents/feereceipt?semester=${feeData.student.nextSemester}`);
+  },
+  onError: (error) => {
+    console.error("Error recording payment:", error);
+    toast.error(error.response?.data?.message || "Failed to record payment");
+  },
+});
+```
+
+- `mutationFn`: Sends payment data to the backend.
+- `onSuccess`: Shows a success toast and navigates to the fee receipt page.
+- `onError`: Shows an error toast with the backend message or a default message.
+
+#### `handlePayFee`
+
+Initiates the payment process with Razorpay.
+
 ```jsx
 const handlePayFee = async () => {
-    setIsLoading(true);
+  if (!feeData || feeData.feeStatus?.isPaid) {
+    toast.error("Payment already completed or invalid fee data");
+    return;
+  }
+
+  toast.loading("Initializing payment...", { id: "payment-init" });
+
+  try {
     const scriptLoaded = await loadRazorpayScript(RAZORPAY_SCRIPT_URL);
     if (!scriptLoaded) {
-        alert('Failed to load payment gateway...');
-        setIsLoading(false);
-        return;
+      toast.error("Failed to load payment gateway...");
+      return;
     }
-    try {
-        const { data } = await axios.post('http://localhost:8000/api/payment/create-order', { amount: payableAmount, currency: 'INR' });
-        const { orderId, currency, amount: amountInPaise } = data;
-        const options = { ... }; // Razorpay options
-        const rzp = new window.Razorpay(options);
-        rzp.on('payment.failed', (response) => { ... });
-        rzp.open();
-    } catch (error) {
-        alert(`Payment failed: ${error.message || 'Unknown error'}`);
-        setIsLoading(false);
+
+    const backendUrl = "process.env.REACT_APP_API_URL/payment/create-order";
+    const orderPayload = { amount: payableAmount, currency: "INR" };
+    const { data } = await axios.post(backendUrl, orderPayload);
+
+    const options = {
+      key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+      amount: data.amount,
+      currency: data.currency,
+      name: "IIT Guwahati",
+      description: `Fee Payment - ${feeSummary.semester}`,
+      order_id: data.orderId,
+      handler: function (response) {
+        const paymentData = {
+          semester: Number(feeData.student.nextSemester),
+          feeBreakdownId: feeData.feeBreakdown._id,
+          transactionId: response.razorpay_payment_id,
+          academicYear: getCurrentAcademicYear(),
+          paymentDetails: {
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+            amount: payableAmount,
+            currency: data.currency,
+          },
+          isPaid: true,
+          paidAt: new Date().toISOString(),
+        };
+        recordPayment.mutate(paymentData);
+      },
+      prefill: {
+        name: feeData?.student?.name || "",
+        email: feeData?.student?.email || "",
+        contact: feeData?.student?.contact || "",
+      },
+      notes: {
+        address: "IIT Guwahati, Assam, India",
+        roll_number: feeData?.student?.rollNo || "",
+        semester: feeSummary.semester,
+      },
+      theme: { color: "#007bff" },
+      modal: {
+        ondismiss: () => {
+          toast.dismiss("payment-init");
+        },
+      },
+    };
+
+    if (window.Razorpay) {
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", (response) => {
+        toast.error(`Payment Failed: ${response.error.description || "Unknown error"}`);
+      });
+      rzp.open();
+    } else {
+      toast.error("Payment gateway failed to initialize.");
     }
+  } catch (error) {
+    toast.error(`Payment failed: ${error.message}`);
+  }
 };
 ```
-- Loads Razorpay script and initiates payment.
-- Sends a POST request to create a payment order.
-- Configures Razorpay options (e.g., key, amount, prefill data).
-- Opens the Razorpay checkout modal.
-- Handles success (`handler`) and failure (`payment.failed`) events.
-- Updates state on successful payment.
 
-### PDF Download Handler: `handleDownloadReceipt`
+- Checks if payment is already completed or fee data is invalid.
+- Loads the Razorpay script.
+- Creates a payment order via the backend.
+- Configures Razorpay options, including:
+  - Payment metadata (amount, currency, order ID).
+  - Success handler to record payment.
+  - Prefill data for student details.
+  - Custom notes and theme.
+- Opens the Razorpay checkout modal.
+- Handles payment failure and errors with appropriate toasts.
+
+---
+
+### 5. Receipt Generation
+
+#### `handleDownloadReceipt`
+
+Generates and downloads a PDF receipt.
+
 ```jsx
 const handleDownloadReceipt = async () => {
-    if (!isPaid || !paymentDetails || isDownloading) return;
-    setIsDownloading(true);
-    try {
-        const blob = await pdf(<FeeReceiptPDF ... />).toBlob();
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `Fee_Receipt_${student.rollNumber}_Sem${student.currentSemester}.pdf`;
-        link.click();
-        URL.revokeObjectURL(url);
-    } catch (error) {
-        alert("Failed to generate PDF receipt...");
-    } finally {
-        setIsDownloading(false);
-    }
+  if (!feeData?.feeStatus?.isPaid || isDownloading) return;
+  setIsDownloading(true);
+  toast.loading("Generating receipt...");
+
+  try {
+    const transactionDetails = paymentDetails || {
+      slNo: 1,
+      feeType: feeSummary.feeType,
+      feeAmount: payableAmount,
+      transactionId: "FEE" + feeData.feeStatus?.feeDetailsId?.substring(0, 10),
+      dateTime: new Date().toLocaleString("sv-SE"),
+      status: "Success",
+    };
+
+    const blob = await pdf(
+      <FeeReceiptPDF
+        student={feeData.student}
+        semester={feeSummary.semester}
+        feeData={feeDataForPDF}
+        isPaid={true}
+        transactionDetails={transactionDetails}
+      />
+    ).toBlob();
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Fee_Receipt_${feeData.student.rollNo}_${feeSummary.semester}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild link);
+    URL.revokeObjectURL(url);
+    toast.success("Receipt downloaded successfully");
+  } catch (error) {
+    console.error("Error generating or downloading PDF receipt:", error);
+    toast.error("Failed to generate PDF receipt");
+  } finally {
+    setIsDownloading(false);
+  }
 };
 ```
-- Generates a PDF receipt using `FeeReceiptPDF`.
-- Converts the PDF to a blob and creates a downloadable link.
-- Triggers download and cleans up the URL.
-- Prevents multiple downloads with `isDownloading`.
 
-### Formatting: `formatCurrency`
+- Checks if payment is complete and no download is in progress.
+- Prepares transaction details for the PDF.
+- Uses `@react-pdf/renderer` to generate a PDF blob.
+- Creates a downloadable link and triggers the download.
+- Cleans up the URL and DOM.
+- Shows success or error toasts.
+
+---
+
+### 6. UI Rendering
+
+The component conditionally renders based on state:
+
+#### No User ID
+
+```jsx
+if (!userId) {
+  return (
+    <div className="max-w-[1000px] mx-auto my-10 px-10 py-[35px] bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] text-gray-800 text-center p-12">
+      <h1 className="text-2xl font-semibold mb-4 text-gray-900">Fee Payment</h1>
+      <div className="p-8 bg-yellow-50 rounded-lg border border-yellow-200">
+        <p className="text-lg text-yellow-800">
+          Unable to load user information. Please log in again.
+        </p>
+      </div>
+    </div>
+  );
+}
+```
+
+- Displays an error if user data cannot be loaded.
+
+#### Loading State
+
+```jsx
+if (isLoading) {
+  return (
+    <div className="max-w-[1000px] mx-auto my-10 px-10 py-[35px] bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] text-gray-800 text-center p-12 text-lg text-gray-600">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+      <p>Loading Fee Details...</p>
+    </div>
+  );
+}
+```
+
+- Shows a spinner and loading message.
+
+#### No Fee Structure or Max Semester
+
+```jsx
+if ((error && error.response?.status === 404) || feeData?.isMaxSemesterReached) {
+  return (
+    <div className="max-w-[1000px] mx-auto my-10 px-10 py-[35px] bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] text-gray-800 text-center p-12">
+      <h1 className="text-2xl font-semibold mb-4 text-gray-900">Fee Payment</h1>
+      <div className="p-8 bg-yellow-50 rounded-lg border border-yellow-200">
+        <p className="text-lg text-yellow-800">
+          {feeData?.isMaxSemesterReached
+            ? feeData.message || "You have completed the maximum number of semesters..."
+            : "Fee payment is not yet available for the next semester..."}
+        </p>
+      </div>
+    </div>
+  );
+}
+```
+
+- Displays a warning if no fee structure is available or the student has completed their program.
+
+#### Main Content
+
+The main UI includes:
+- **Student Details**: Displays student name, roll number, program, and semester.
+- **Fee Overview**: A table summarizing semester, fee type, total fee, paid amount, due amount, status, and action (pay button).
+- **Fee Breakdown**: A detailed table of fee particulars, total, adjustments, and net payable amount.
+- **Payment Confirmation**: A success message and receipt view button if payment is complete.
+
+Example of the fee overview table:
+
+```jsx
+<table className="w-full border-collapse">
+  <thead>
+    <tr>
+      <th className={`${thBaseClasses} bg-blue-100 text-blue-800`}>Semester</th>
+      <th className={`${thBaseClasses} bg-blue-100 text-blue-800`}>Fee Type</th>
+      <th className={`${thBaseClasses} bg-blue-100 text-blue-800 text-right`}>Total Fee</th>
+      <th className={`${thBaseClasses} bg-blue-100 text-blue-800 text-right`}>Fee Paid</th>
+      <th className={`${thBaseClasses} bg-blue-100 text-blue-800 text-right`}>Amount Due</th>
+      <th className={`${thBaseClasses} bg-blue-100 text-blue-800`}>Status</th>
+      <th className={`${thBaseClasses} bg-blue-100 text-blue-800`}>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr className="transition-colors duration-250 ease even:bg-gray-50 hover:bg-blue-50">
+      <td className={cellBaseClasses}>{feeSummary.semester}</td>
+      <td className={cellBaseClasses}>{feeSummary.feeType}</td>
+      <td className={`${cellBaseClasses} text-right font-medium tracking-tight`}>
+        {formatCurrency(feeSummary.totalFee)}
+      </td>
+      <td className={`${cellBaseClasses} text-right font-medium tracking-tight`}>
+        {formatCurrency(feeSummary.feePaid)}
+      </td>
+      <td className={`${cellBaseClasses} text-right font-medium tracking-tight ${
+        !feeData.feeStatus?.isPaid ? "text-red-700 font-bold" : ""
+      }`}>
+        {formatCurrency(feeSummary.feeToBePaid)}
+      </td>
+      <td className={`${cellBaseClasses} text-center`}>
+        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border ${
+          feeData.feeStatus?.isPaid
+            ? "text-green-800 bg-green-100 border-green-200"
+            : "text-red-800 bg-red-100 border-red-200 font-bold"
+        }`}>
+          {feeSummary.remarks}
+        </span>
+      </td>
+      <td className={`${cellBaseClasses} text-center`}>
+        {!feeData.feeStatus?.isPaid ? (
+          <button
+            onClick={handlePayFee}
+            className={`${buttonBaseClasses} bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:from-blue-600 hover:to-blue-800`}
+            disabled={recordPayment.isLoading}
+          >
+            {recordPayment.isLoading ? "Processing..." : "Proceed to Pay"}
+          </button>
+        ) : (
+          <span className="text-green-700 font-bold">✓ Payment Complete</span>
+        )}
+      </td>
+    </tr>
+  </tbody>
+</table>
+```
+
+- Uses Tailwind CSS for styling.
+- Conditionally styles the status and action columns based on payment status.
+
+---
+
+### 7. Utility Functions
+
+#### `formatCurrency`
+
+Formats amounts as Indian Rupees.
+
 ```jsx
 const formatCurrency = (amount) => {
-    const numericAmount = Number(amount);
-    if (isNaN(numericAmount)) {
-        return '₹ --.--';
-    }
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', ... }).format(numericAmount);
+  const numericAmount = Number(amount);
+  if (isNaN(numericAmount)) {
+    return "₹ --.--";
+  }
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(numericAmount);
 };
 ```
-- Formats numbers as INR currency (e.g., ₹ 1,00,000.00).
-- Handles invalid amounts by returning a placeholder.
 
-### Rendering
-The component renders conditionally:
-- **Loading State**: Displays a loading message if `isLoading` is true and no data is available.
-- **Main UI**: Renders student details, fee overview, breakdown, and payment history (if paid).
-- Uses Tailwind CSS for responsive, modern styling (e.g., shadows, gradients, hover effects).
-- Tables use consistent styling with hover effects and conditional formatting (e.g., red for due amounts).
+- Converts the amount to a number.
+- Returns a formatted string with the INR symbol and two decimal places.
 
-## Styling with Tailwind CSS
-- **Container**: `max-w-[1000px] mx-auto my-10 px-10 py-[35px] bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)]`.
-- **Buttons**: Gradient backgrounds (e.g., `bg-gradient-to-r from-blue-500 to-blue-700`), hover effects, and disabled states.
-- **Tables**: Responsive with `overflow-x-auto`, alternating row colors (`even:bg-gray-50`), and hover effects (`hover:bg-blue-50`).
-- **Badges**: Color-coded status indicators (e.g., green for paid, red for due).
+---
 
-## Environment Variables
-- `REACT_APP_RAZORPAY_KEY_ID`: Razorpay API key for payment processing.
-- Must be set in the `.env` file for the payment gateway to work.
+## Styling
 
-## Notes
-- The payable amount is hardcoded to 2 INR for testing (`payableAmount = 2`).
-- The backend URL (`http://localhost:8000/api/payment/create-order`) assumes a local server.
-- The `FeeReceiptPDF` component is not included but is assumed to accept `student`, `semester`, `feeData`, `isPaid`, and `transactionDetails` props.
-- Error handling is implemented for payment failures, script loading, and PDF generation.
+The component uses **Tailwind CSS** for styling, with custom classes for:
+- Responsive layout (`max-w-[1000px] mx-auto`).
+- Card-like containers (`bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)]`).
+- Tables (`border-collapse`, `text-left`, `hover:bg-blue-50`).
+- Buttons (`bg-gradient-to-r`, `hover:shadow-lg`).
+- Status badges (`rounded-full`, `text-green-800 bg-green-100`).
+
+---
+
+## Error Handling
+
+- **LocalStorage Errors**: Logs errors and displays a user-friendly message.
+- **API Errors**: Handles 404s (no fee structure) separately; shows toasts for other errors.
+- **Payment Errors**: Displays specific error messages from Razorpay or the backend.
+- **PDF Generation Errors**: Shows a toast if PDF generation fails.
+
+---
+
+## Assumptions and Limitations
+
+- Assumes a backend API at `/student/:userId/fees` and `/student/:userId/fees/payment`.
+- Assumes environment variables (`REACT_APP_API_URL`, `REACT_APP_RAZORPAY_KEY_ID`) are set.
+- Razorpay script must be accessible at the specified URL.
+- Limited to INR currency for payments.
+- No support for partial payments or refunds.
+- PDF generation requires the `FeeReceiptPDF` component to be correctly implemented.
+
+---
 
 ## Future Improvements
-- Replace hardcoded student and fee data with API calls.
-- Add backend verification for payment signatures.
-- Implement a loading spinner for better UX.
-- Support multiple payment methods or currencies.
-- Add accessibility attributes (e.g., ARIA labels).
+
+- Add support for multiple payment gateways.
+- Implement retry logic for failed payments.
+- Add a payment history section.
+- Support partial payments or installment plans.
+- Improve accessibility (ARIA labels, keyboard navigation).
+- Add unit tests for helper functions and hooks.
+
+---

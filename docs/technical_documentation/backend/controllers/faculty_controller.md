@@ -29,6 +29,11 @@ Fetches basic details of a faculty member.
 2.  Populates user information from the `User` model
 3.  Returns the faculty document
 
+**Key Code Snippet**
+```javascript
+const user = await Faculty.findOne({ userId: facultyId }).populate('userId');
+```
+
 **Output:**
 -   Success (200): Returns faculty object
 -   Error (404/500): Returns error message
@@ -44,6 +49,12 @@ Retrieves multiple faculty members using an array of faculty IDs.
 1.  Parses the comma-separated list of IDs
 2.  Queries the `Faculty` collection with `$in` filter
 3.  Returns the matched faculty documents
+
+**Key Code Snippet**
+```javascript
+const facultyIds = req.query.ids.split(',');
+const facultyMembers = await Faculty.find({ facultyId: { $in: facultyIds } });
+```
 
 **Output:**
 -   Success (200): Returns array of faculty documents
@@ -65,6 +76,24 @@ Retrieves the list of ongoing courses taught by a faculty member and compiles co
     -   Calculates number of students
     -   Generates random data for assignments and attendance
 4.  Sets feedback availability based on current month
+
+**Key Code Snippet**
+```javascript
+// Filter ongoing courses
+const activeCourses = facultyCourses.filter(course => course.status === 'Ongoing');
+
+// Get course details with metrics
+const coursesWithDetails = await Promise.all(activeCourses.map(async (course) => {
+  const courseDetails = await Course.findOne({ courseCode: course.courseCode });
+  const studentCount = courseDetails.students ? courseDetails.students.length : 0;
+  return {
+    id: courseDetails.courseCode,
+    name: courseDetails.courseName,
+    students: studentCount,
+    // ...other metrics
+  };
+}));
+```
 
 **Output:**
 -   Success (200): Returns array of course objects with metrics and feedback status
@@ -88,9 +117,30 @@ Fetches detailed information of all students enrolled in a particular course.
 4.  Fetches user info (name, email, profile) from `User` model
 5.  Combines all data including randomized attendance
 
+**Key Code Snippet**
+```javascript
+// Get course and students
+const course = await Course.findOne({ courseCode: courseId });
+const students = course.students || [];
+
+// Get student and user details
+const studentDetails = await Student.find({ userId: { $in: students } });
+const userInfo = await User.find({ _id: { $in: students } }, 'name email profilePicture');
+
+// Combine data
+const studentsWithDetails = students.map(registration => {
+  return {
+    rollNo: studentInfo.rollNo,
+    name: user.name,
+    // ...other details
+  };
+});
+```
+
 **Output:**
 -   Success (200): Returns detailed student list with course info
 -   Error (404/500): Returns error message
+
 
 **Output Structure:**
 -   Course: `courseCode`, `courseName`, `department`, `credits`

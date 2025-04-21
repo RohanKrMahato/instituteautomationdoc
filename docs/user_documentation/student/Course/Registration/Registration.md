@@ -37,7 +37,7 @@ You **do not need to manually register** for compulsory courses. They are pre-re
 - ❌ `Dropped` – You have opted out (if allowed).
 - 🔄 `Pending` – Registration is yet to be processed.
 
-![compulsory_courses](./Images/compulsory_courses.png)
+![compulsory_courses](./images/compulsory_courses.png)
 
 ---
 
@@ -59,7 +59,7 @@ Elective courses offer flexibility to choose based on interest or academic plan.
 - You may be limited in the number of electives you can take.
 - **Status** shows your current enrollment state.
 
-![elective_courses](./Images/elective_courses.png)
+![elective_courses](./images/elective_courses.png)
 
 ---
 
@@ -82,7 +82,7 @@ Audit courses are **non-credit** courses taken for learning without grade impact
 
 🛈 **Note**: Some institutes require approval to audit certain courses.
 
-![audit_courses](./Images/audit_courses.png)
+![audit_courses](./images/audit_courses.png)
 
 ---
 

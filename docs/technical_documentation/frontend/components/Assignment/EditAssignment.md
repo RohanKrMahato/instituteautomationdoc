@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `EditAssignment` component is a React-based front-end module designed to allow faculty members at an academic institution (e.g., IIT Guwahati) to edit an existing assignment for a specific course. It fetches assignment details, pre-populates a form with the current data, and submits updates to a backend API. The component uses **React Router** for navigation and URL parameters, **Fetch API** for data operations, and **Tailwind CSS** for styling, providing a clean and responsive user interface.
+The `EditAssignment` component is a React-based front-end module designed to allow faculty members at IIT Guwahati to edit an existing assignment for a specific course. It fetches assignment details, pre-populates a form with the current data, and submits updates to a backend API. The component uses **React Router** for navigation and URL parameters, **Fetch API** for data operations, and **Tailwind CSS** for styling, providing a clean and responsive user interface.
 
 ## Dependencies
 

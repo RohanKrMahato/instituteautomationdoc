@@ -39,6 +39,22 @@ Authenticates user and generates JWT access & refresh tokens.
 6.  Stores refresh token in DB.
 7.  Sends tokens via cookies.
 
+**Key Code Snippet**
+```javascript
+const user = await User.findOne({ email });
+const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+const accessToken = jwt.sign({ user: { email: user.email, role } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+const refreshToken = jwt.sign({ user: { email: user.email, role } }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d' });
+
+user.refreshToken = refreshToken;
+await user.save();
+
+res.cookie('user', JSON.stringify({ email: user.email, userId: user._id }), { secure: true });
+res.cookie('refreshToken', refreshToken, { secure: true });
+res.cookie('accessToken', accessToken, { secure: true });
+```
+
 **Output:**
 -   Success (200): Returns `user` object and sets cookies.
 -   Error (400/401/500): Input validation failure or internal error.
@@ -64,6 +80,18 @@ Middleware-based route to refresh access token using a valid refresh token.
 3.  `verifyRefreshTokenInDB`: Confirms token match in database.
 4.  Generates new access token.
 
+**Key Code Snippet**
+```javascript
+const accessToken = jwt.sign(
+  { user: { email: req.foundUser.email, role: req.foundUser.role } },
+  process.env.ACCESS_TOKEN_SECRET,
+  { expiresIn: '1h' }
+);
+
+res.header('Authorization', accessToken).json({ user: req.foundUser });
+
+```
+
 **Output:**
 -   Success (200): Returns new access token.
 -   Error (500): Token invalid or internal error.
@@ -77,6 +105,14 @@ Clears authentication cookies and ends user session.
 **Process:**
 1.  Validates access token via `validateAccessToken`.
 2.  Clears all cookies (`refreshToken`, `accessToken`, `user`).
+
+**Key Code Snippet**
+```javascript
+res.clearCookie('refreshToken');
+res.clearCookie('accessToken');
+res.clearCookie('user');
+
+```
 
 **Output:**
 -   Success (200): Logout confirmation.

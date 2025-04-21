@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `AssignmentDetail` component is a React-based front-end module designed to manage student interactions with a specific course assignment at an academic institution (e.g., IIT Guwahati). It fetches assignment and student data, allows students to submit text-based assignments, displays submission status, and supports undoing submissions if before the deadline. The component uses **React Router** for URL parameters, **Fetch API** for data operations, and **Tailwind CSS** for styling, providing a responsive and user-friendly interface.
+The `AssignmentDetail` component is a React-based front-end module designed to manage student interactions with a specific course assignment at IIT Guwahati. It fetches assignment and student data, allows students to submit text-based assignments, displays submission status, and supports undoing submissions if before the deadline. The component uses **React Router** for URL parameters, **Fetch API** for data operations, and **Tailwind CSS** for styling, providing a responsive and user-friendly interface.
 
 ## Dependencies
 

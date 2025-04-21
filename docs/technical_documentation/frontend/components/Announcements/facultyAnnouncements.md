@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `FacultyCourseAnnouncements` component is a React-based front-end module designed to manage course announcements for faculty members at an academic institution (e.g., IIT Guwahati). It allows faculty to view, add, edit, and delete announcements for a specific course, fetched dynamically using the course ID from the URL. The component integrates with **Tanstack Query** for data fetching and mutations, uses **React Router** for navigation, and is styled with **Tailwind CSS**. It includes form validation, error handling, and a responsive UI.
+The `FacultyCourseAnnouncements` component is a React-based front-end module designed to manage course announcements for faculty members in our academic institution. It allows faculty to view, add, edit, and delete announcements for a specific course, fetched dynamically using the course ID from the URL. The component integrates with **Tanstack Query** for data fetching and mutations, uses **React Router** for navigation, and is styled with **Tailwind CSS**. It includes form validation, error handling, and a responsive UI.
 
 ## Dependencies
 

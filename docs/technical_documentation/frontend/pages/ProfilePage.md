@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `ProfilePage` component is a React-based front-end module designed to render user-specific profile pages based on the user's role within an academic institution (e.g., IIT Guwahati). It leverages React's Context API to determine the user's role and conditionally renders one of four profile components: `StudentProfile`, `FacultyProfile`, `AcademicAdminProfile`, or `HostelAdminProfile`. This approach ensures a modular and role-based user interface.
+The `ProfilePage` component is a React-based front-end module. It leverages React's Context API to determine the user's role and conditionally renders one of four profile components: `StudentProfile`, `FacultyProfile`, `AcademicAdminProfile`, or `HostelAdminProfile`. This approach ensures a modular and role-based user interface.
 
 ## Dependencies
 
@@ -118,26 +118,3 @@ export const RoleContext = createContext({
 - **Scalability**: Adding a new role requires:
   1. Creating a new profile component.
   2. Adding a new `case` in the `switch` statement.
-
-## Future Improvements
-
-- **Type Checking**: Use PropTypes or TypeScript to validate the `role` value (e.g., restrict to `"student" | "faculty" | "acadAdmin" | "nonAcadAdmin"`).
-- **Loading State**: Add a loading state if the role is fetched asynchronously (e.g., from an API).
-- **Error UI**: Replace the plain `<div>` error with a styled component or a dedicated error page.
-- **Dynamic Role Mapping**: Replace the `switch` statement with a mapping object for better maintainability:
-
-```jsx
-const profileComponents = {
-    student: StudentProfile,
-    faculty: FacultyProfile,
-    acadAdmin: AcademicAdminProfile,
-    nonAcadAdmin: HostelAdminProfile,
-};
-
-const Component = profileComponents[role] || (() => <div>Error: Unknown role</div>);
-return <Component />;
-```
-
-- **Accessibility**: Ensure profile components follow accessibility guidelines (e.g., ARIA attributes, keyboard navigation).
-- **Testing**: Add unit tests to verify that the correct component renders for each role and that the error case works as expected.
-

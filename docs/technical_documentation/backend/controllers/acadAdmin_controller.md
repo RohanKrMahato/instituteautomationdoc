@@ -1,237 +1,327 @@
-# Academic Admin Controller
+# Faculty and Student Management API
+
+This document provides a comprehensive overview of the Faculty and Student Management API, detailing its core functionalities, implementation, and key code snippets. The API is built using Node.js, Express, Mongoose, and MongoDB, designed to manage faculty, students, applications, fees, course drop requests, and document access within an educational institution.
+
+---
 
 ## Overview
 
-The `acadAdmin.controller` module handles academic administrative tasks related to document applications, fee structures, course drop requests, and student document access. It allows academic admins to manage and process student-related data efficiently within the Institute Automation System.
+The API provides endpoints for:
+- **Faculty Management**: Adding faculty members with their academic and personal details.
+- **Student Management**: Bulk addition of students and managing their document access.
+- **Application Management**: Handling document applications (e.g., Bonafide, Passport) with filtering, status updates, and comments.
+- **Fee Management**: Managing fee structures, including creation, retrieval, updates, and status toggling.
+- **Course Drop Requests**: Managing student requests to drop courses, including approval and enrollment updates.
+- **Department Retrieval**: Fetching unique departments from student records.
 
-## Dependencies
+---
 
+## Key Features and Implementation Details
+
+### 1. Add Faculty (`addFaculty`)
+
+**Purpose**: Creates a new faculty member with associated user and faculty records.
+
+**Implementation**:
+- Validates if a user with the provided email already exists.
+- Hashes the email as a password using `bcrypt` for security.
+- Creates a `User` document with personal details and a dummy refresh token.
+- Creates a `Faculty` document linked to the user with academic details.
+
+**Key Code Snippet**:
 ```javascript
-
-import mongoose from "mongoose";
-import { ApplicationDocument, Bonafide, Passport } from '../models/documents.models.js';
-import { Student } from '../models/student.model.js';
-import { User } from '../models/user.model.js';
-import { CourseDropRequest } from '../models/courseDropRequest.model.js';
-import { Course, StudentCourse } from '../models/course.model.js';
-import { FeeBreakdown } from "../models/fees.model.js";`
+const hashedPassword = await bcrypt.hash(email, 10);
+const newUser = new User({
+  name, email, password: hashedPassword, refreshToken: "abc",
+  contactNo, address, dateOfBirth, bloodGroup
+});
+const savedUser = await newUser.save();
+const newFaculty = new Faculty({
+  userId: savedUser._id, email, department, designation,
+  yearOfJoining, specialization, qualifications, experience,
+  publications, achievements, conferences
+});
+const savedFaculty = await newFaculty.save();
 ```
 
-## Controller Methods
+**Explanation**:
+- The email is hashed to create a secure password.
+- The `User` model stores general user information, while the `Faculty` model stores academic-specific details.
+- The `userId` links the `Faculty` document to the `User` document.
 
-### Application Management
-#### `getAllApplications`
-Fetches all application documents with pagination.
+---
 
-**Input:**
--   `req.query`: May contain `page` and `limit`.
+### 2. Add Students in Bulk (`addStudents`)
 
-**Process:**
-1.  Retrieves paginated applications.
-2.  Populates student and user data.
-3.  Appends student name to each application.
+**Purpose**: Adds multiple students in a single request, creating user and student records.
 
-**Output:**
--   Success (200): Returns enriched applications and pagination metadata.
--   Error (500): Returns error message.
+**Implementation**:
+- Accepts an array of student objects.
+- Validates required fields and checks for duplicates (email or roll number).
+- Hashes the roll number as a password.
+- Creates `User` and `Student` documents for each valid student.
 
-#### `filterApplications`
-Filters applications based on optional query parameters.
+**Key Code Snippet**:
+```javascript
+for (const student of studentsData) {
+  const existingUser = await User.findOne({ email });
+  const existingStudent = await Student.findOne({ rollNo });
+  if (existingUser || existingStudent) continue;
+  const hashedPassword = await bcrypt.hash(rollNo, 10);
+  const newUser = new User({ name, email, password: hashedPassword, ... });
+  const savedUser = await newUser.save();
+  const newStudent = new Student({ userId: savedUser._id, email, rollNo, ... });
+  const savedStudent = await newStudent.save();
+  insertedStudents.push({ student: savedStudent, user: savedUser });
+}
+```
 
-**Input:**
--   `req.query`: Can include `rollNo`, `type`, `status`.
+**Explanation**:
+- Iterates through the student data, skipping entries with missing required fields or duplicates.
+- Uses `bcrypt` to hash the roll number for secure password storage.
+- Links `Student` to `User` via `userId`.
 
-**Process:**
-1.  Dynamically builds query based on filters.
-2.  Looks up document-specific details (Bonafide/Passport).
-3.  Enriches each application with student and document info.
+---
 
-**Output:**
--   Success (200): Filtered application list.
--   Error (500): Returns error message.
+### 3. Get All Applications (`getAllApplications`)
 
-#### `getApplicationById`
-Fetches a specific application with full details.
+**Purpose**: Retrieves paginated document applications with student details.
 
-**Input:**
--   `req.params`: Contains `id` (application ID).
+**Implementation**:
+- Supports pagination via `page` and `limit` query parameters.
+- Populates `studentId` and `userId` to include student and user details.
+- Enriches response with student names.
 
-**Process:**
-1.  Retrieves application and student/user info.
-2.  Fetches extra document info based on type.
-3.  Builds enriched response with detailed student data.
+**Key Code Snippet**:
+```javascript
+const applications = await ApplicationDocument.find()
+  .populate({
+    path: "studentId",
+    select: "rollNo department program userId",
+    populate: { path: "userId", select: "name" }
+  })
+  .sort({ createdAt: -1 })
+  .limit(limit * 1)
+  .skip((page - 1) * limit)
+  .lean();
+const enrichedApplications = applications.map(app => ({
+  ...app,
+  studentId: { ...app.studentId, name: app.studentId?.userId?.name }
+}));
+```
 
-**Output:**
--   Success (200): Returns enriched application.
--   Error (404/500): Returns error message.
+**Explanation**:
+- Uses Mongoose’s `populate` to fetch related student and user data.
+- Applies pagination using `limit` and `skip`.
+- Transforms the response to include the student’s name directly in `studentId`.
 
-#### `updateApplicationStatus`
-Updates status and optionally appends remarks.
+---
 
-**Input:**
--   `req.params`: `id` of the application.
--   `req.body`: Contains `status`, `remarks`.
+### 4. Filter Applications (`filterApplications`)
 
-**Process:**
-1.  Validates inputs.
-2.  Updates status and remarks.
-3.  Populates student info and returns enriched response.
+**Purpose**: Filters applications by roll number, document type, and status.
 
-**Output:**
--   Success (200): Returns updated application.
--   Error (400/404/500): Returns error message.
+**Implementation**:
+- Builds a dynamic query based on query parameters.
+- Populates student and approval details.
+- Fetches specific document details (e.g., Bonafide, Passport) based on `documentType`.
 
-#### `addComment`
-Adds a comment to the application approval remarks.
+**Key Code Snippet**:
+```javascript
+if (rollNo) {
+  const student = await Student.findOne({ rollNo: { $regex: `^${rollNo}`, $options: "i" } });
+  if (student) query.studentId = student._id;
+  else return res.status(200).json([]);
+}
+const applications = await ApplicationDocument.find(query)
+  .populate({ path: "studentId", select: "...", populate: { path: "userId", select: "..." } })
+  .populate("approvalDetails.approvedBy", "name")
+  .sort({ createdAt: -1 })
+  .lean();
+const detailedApplications = await Promise.all(
+  applications.map(async app => {
+    let details;
+    switch (app.documentType) {
+      case "Bonafide": details = await Bonafide.findOne({ applicationId: app._id }); break;
+      case "Passport": details = await Passport.findOne({ applicationId: app._id }); break;
+    }
+    return { ...app, details, studentName: app.studentId?.userId?.name || "N/A", ... };
+  })
+);
+```
 
-**Input:**
--   `req.params`: `id` of the application.
--   `req.body`: Contains `comment`.
+**Explanation**:
+- Uses regex for partial roll number matching.
+- Dynamically fetches document-specific details using a `switch` statement.
+- Enriches response with student and document details.
 
-**Process:**
-1.  Pushes new comment to remarks array.
-2.  Updates `updatedAt` timestamp.
+---
 
-**Output:**
--   Success (200): Updated application.
--   Error (404/500): Returns error message.
+### 5. Update Application Status (`updateApplicationStatus`)
 
-### Course Drop Request Management
+**Purpose**: Updates the status of an application and adds remarks.
 
-#### `getDropRequests`
-Retrieves all course drop requests with student info.
+**Implementation**:
+- Validates required fields and converts status to proper case.
+- Initializes `approvalDetails` if absent.
+- Updates status and remarks, saving the changes.
 
-**Input:**
--   None
+**Key Code Snippet**:
+```javascript
+const properStatus = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+application.status = properStatus;
+if (remarks) {
+  if (!application.approvalDetails.remarks) application.approvalDetails.remarks = [];
+  application.approvalDetails.remarks.push(remarks);
+}
+application.updatedAt = new Date();
+const updatedApplication = await application.save();
+```
 
-**Process:**
-1.  Fetches drop requests from DB.
-2.  Populates student and user data.
-3.  Maps each request with required metadata.
+**Explanation**:
+- Ensures consistent status formatting (e.g., "Approved" instead of "approved").
+- Safely handles remarks addition with array initialization.
 
-**Output:**
--   Success (200): Returns list of formatted requests.
--   Error (500): Returns error message.
+---
 
-#### `updateDropRequestStatus`
-Updates the status and remarks of a drop request.
+### 6. Manage Fee Structure (`addFeeStructure`, `getFeeBreakdown`, `toggleFeeBreakdownStatus`, `updateFeeBreakdown`)
 
-**Input:**
--   `req.params`: `requestId`
--   `req.body`: `status`, `remarks`
+**Purpose**: Manages fee structures for programs and semesters.
 
-**Process:**
-1.  Updates drop request fields.
-2.  If status is `Approved`, unenrolls student from the course.
+**Implementation**:
+- `addFeeStructure`: Creates or updates a fee structure based on program and semester parity.
+- `getFeeBreakdown`: Retrieves fee structures with optional filtering.
+- `toggleFeeBreakdownStatus`: Toggles the `isActive` flag.
+- `updateFeeBreakdown`: Updates specific fields of a fee structure.
 
-**Output:**
--   Success (200): Confirmation message.
--   Error (404/500): Returns error message.
+**Key Code Snippet** (addFeeStructure):
+```javascript
+const existingStructure = await FeeBreakdown.findOne({
+  program: processedData.program,
+  semesterParity: processedData.semesterParity
+});
+if (existingStructure) {
+  const updatedStructure = await FeeBreakdown.findByIdAndUpdate(
+    existingStructure._id,
+    { ...processedData, updatedAt: new Date() },
+    { new: true }
+  );
+  return res.status(200).json({ message: "Fee structure updated successfully", ... });
+}
+const newStructure = new FeeBreakdown(processedData);
+await newStructure.save();
+```
 
-**Business Rules:**
--   Course un-enrollment only occurs if the request is approved.
+**Explanation**:
+- Checks for existing structures to avoid duplicates.
+- Updates or creates a new `FeeBreakdown` document as needed.
 
-### Fee Structure Management
+---
 
-#### `addFeeStructure`
-Adds a new academic fee structure.
+### 7. Manage Course Drop Requests (`getDropRequests`, `updateDropRequestStatus`)
 
-**Input:**
--   `req.body`: Must include year, program, semesterParity, and fee component values.
+**Purpose**: Handles student course drop requests and their approval.
 
-**Process:**
-1.  Validates required and numeric fields.
-2.  Validates academic program.
-3.  Creates and saves `FeeBreakdown` entry.
+**Implementation**:
+- `getDropRequests`: Fetches all drop requests with student and course details.
+- `updateDropRequestStatus`: Updates request status and removes student enrollment if approved.
 
-**Output:**
--   Success (201): New fee structure saved.
--   Error (400/500): Returns validation or server error.
+**Key Code Snippet** (updateDropRequestStatus):
+```javascript
+if (status === 'Approved') {
+  const student = await Student.findOne({ rollNo: request.rollNo });
+  const course = await Course.findOne({ courseCode: request.courseId });
+  await StudentCourse.deleteOne({ rollNo: student.rollNo, courseId: course.courseCode });
+  await Course.updateOne(
+    { courseCode: course.courseCode },
+    { $pull: { students: student.userId } }
+  );
+}
+```
 
-**Validation:**
--   Fields must be present and numeric.
--   Program must be from: `BTech`, `MTech`, `PhD`, `BDes`, `MDes`.
+**Explanation**:
+- On approval, removes the student from the `StudentCourse` and `Course` models.
+- Includes robust error handling for missing students or courses.
 
-#### `getFeeBreakdown`
-Fetches academic fee structure based on filters.
+---
 
-**Input:**
--   `req.query`: Optional filters `year`, `program`, `semesterParity`
+### 8. Manage Student Document Access (`getStudentsWithDocumentAccess`, `updateStudentDocumentAccess`, `bulkUpdateDocumentAccess`)
 
-**Process:**
-1.  Builds dynamic query.
-2.  Retrieves matching entries.
+**Purpose**: Manages student access to documents (transcript, ID card, fee receipt).
 
-**Output:**
--   Success (200): Fee structures.
--   Error (404/500): Returns error message.
+**Implementation**:
+- `getStudentsWithDocumentAccess`: Retrieves paginated students with access details.
+- `updateStudentDocumentAccess`: Updates access for a single student.
+- `bulkUpdateDocumentAccess`: Updates access for multiple students.
 
-### Document Access Management
+**Key Code Snippet** (updateStudentDocumentAccess):
+```javascript
+const student = await Student.findByIdAndUpdate(
+  id,
+  {
+    $set: {
+      "documentAccess.transcript": !!access.transcript,
+      "documentAccess.idCard": !!access.idCard,
+      "documentAccess.feeReceipt": !!access.feeReceipt,
+      updatedAt: new Date()
+    }
+  },
+  { new: true }
+).populate("userId", "name email contactNo");
+```
 
-#### `getStudentsWithDocumentAccess`
-Lists students and their document access rights.
+**Explanation**:
+- Uses `$set` to update specific document access fields.
+- Ensures boolean values with `!!` operator.
 
-**Input:**
--   `req.query`: Filters like `branch`, `program`, `semester`, `search`, and pagination.
+---
 
-**Process:**
-1.  Filters students based on parameters.
-2.  Populates user details.
-3.  Adds access flags (transcript, ID card, fee receipt).
+### 9. Get All Departments (`getAllDepartments`)
 
-**Output:**
--   Success (200): Students with access data.
--   Error (500): Returns error message.
+**Purpose**: Retrieves unique departments from student records.
 
-#### `updateStudentDocumentAccess`
-Updates document access flags for one student.
+**Implementation**:
+- Fetches all students and extracts unique department names using a `Set`.
 
-**Input:**
--   `req.params`: Student `id`
--   `req.body`: `access` object with flags
+**Key Code Snippet**:
+```javascript
+const students = await Student.find({});
+const departments = students.map(student => student.department);
+const uniqueDepartments = [...new Set(departments)];
+```
 
-**Process:**
-1.  Validates input.
-2.  Updates specific access fields.
+**Explanation**:
+- Simple yet efficient use of `Set` to eliminate duplicates.
 
-**Output:**
--   Success (200): Updated student object.
--   Error (400/404/500): Returns error message.
+---
 
-#### `bulkUpdateDocumentAccess`
-Performs bulk access updates for multiple students.
+## Error Handling
 
-**Input:**
--   `req.body`: `studentIds` array, `access` object
+- **Try-Catch Blocks**: All endpoints use try-catch to handle errors gracefully.
+- **Validation**: Input validation ensures required fields are present and valid.
+- **Logging**: Console logs are used for debugging, especially in error scenarios.
+- **HTTP Status Codes**:
+  - `200`: Successful operation.
+  - `201`: Resource created.
+  - `400`: Bad request (invalid input).
+  - `404`: Resource not found.
+  - `500`: Server error.
 
-**Process:**
-1.  Validates array and access object.
-2.  Constructs bulk update and executes.
-
-**Output:**
--   Success (200): Modified and matched counts.
--   Error (400/500): Returns error message.
-
-## Error Handling Strategy
-
--   Input validation for all endpoints.
--   Try-catch around async DB operations.
--   Returns meaningful messages and status codes.
--   Fallbacks for optional population steps.
--   Logs errors for debugging purposes.
-
-## Performance Considerations
-
--   Uses `.lean()` for performance.
--   Pagination in listing endpoints.
--   `Promise.all` used for parallel DB reads.
--   Query filtering and selective projection for efficiency.
+---
 
 ## Security Considerations
 
-1.  **Input Validation:**
-    -   Ensures required fields are present and valid before DB ops.
-2.  **Data Protection:**
-    -   Uses selective field population for privacy.
-3.  **Safe Bulk Updates:**
-    -   Document access flags are updated using `updateMany` with checks.
+- **Password Hashing**: Uses `bcrypt` to securely hash passwords.
+- **Duplicate Checks**: Prevents duplicate users/students via email and roll number checks.
+- **Data Validation**: Ensures required fields are present and properly formatted.
+- **Dummy Refresh Token**: Currently uses a placeholder; production should implement proper JWT-based authentication.
+
+---
+
+## Performance Optimizations
+
+- **Lean Queries**: Uses `.lean()` to reduce memory usage for read-heavy operations.
+- **Pagination**: Implements pagination for large datasets (e.g., applications, students).
+- **Indexes**: Assumes MongoDB indexes on fields like `email`, `rollNo`, and `program` for faster queries (not shown in code but recommended).
+
+---

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `CourseAnnouncements` component is a React-based front-end module designed to display course announcements for students at an academic institution (e.g., IIT Guwahati). It fetches announcements for a specific course using the course ID from the URL, displays course details, and renders a list of announcements with their importance, date, and optional attachments. The component uses **Tanstack Query** for data fetching, **React Router** for navigation, and **Tailwind CSS** for styling, providing a clean and responsive user interface.
+The `CourseAnnouncements` component is a React-based front-end module designed to display course announcements for students in our academic institution. It fetches announcements for a specific course using the course ID from the URL, displays course details, and renders a list of announcements with their importance, date, and optional attachments. The component uses **Tanstack Query** for data fetching, **React Router** for navigation, and **Tailwind CSS** for styling, providing a clean and responsive user interface.
 
 ## Dependencies
 

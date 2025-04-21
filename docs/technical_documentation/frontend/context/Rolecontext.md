@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `RoleContext` and `RoleProvider` components form a React Context API implementation designed to manage user roles within an academic institution's automation system (e.g., IIT Guwahati). The `RoleProvider` fetches the user's role from `localStorage` and provides it, along with a setter function, to child components via the `RoleContext`. This enables role-based rendering and functionality across the application (e.g., for students, faculty, or admins). The current implementation is partially incomplete, with commented code indicating alternative role initialization approaches.
+The `RoleContext` and `RoleProvider` components form a React Context API implementation designed to manage user roles within our academic institution automation system. The `RoleProvider` fetches the user's role from `localStorage` and provides it, along with a setter function, to child components via the `RoleContext`. This enables role-based rendering and functionality across the application (e.g., for students, faculty, or admins). The current implementation is partially incomplete, with commented code indicating alternative role initialization approaches.
 
 ## Dependencies
 

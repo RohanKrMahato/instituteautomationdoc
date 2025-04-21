@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `FeeReceiptPage` component is a React-based front-end module designed to generate and preview fee receipt PDFs for students at an academic institution (e.g., IIT Guwahati). It allows users to select a semester, view student information, check fee payment status, generate a PDF receipt, and download it. The component integrates with **@react-pdf/renderer** for PDF generation, uses **Tailwind CSS** for styling, and is wrapped in a custom `DocumentLayout` component for consistent page structure.
+The `FeeReceiptPage` component is a React-based front-end module designed. It allows users to select a semester, view student information, check fee payment status, generate a PDF receipt, and download it. The component integrates with **@react-pdf/renderer** for PDF generation, uses **Tailwind CSS** for styling, and is wrapped in a custom `DocumentLayout` component for consistent page structure.
 
 ## Dependencies
 
@@ -294,21 +294,3 @@ return (
 - **Error Handling**: Limited to `try`/`catch` in `handleGenerate`. Add error messages for failed PDF generation.
 - **Performance**: PDF generation is client-side; large datasets may impact performance.
 - **Security**: No sensitive data is exposed, but ensure `studentData` is securely fetched in production.
-
-## Future Improvements
-
-- **API Integration**: Fetch `studentData` and `feeData` from a backend API.
-- **Error UI**: Display user-friendly error messages for PDF generation failures.
-- **Validation**: Add validation for semester selection (e.g., toast notification if not selected).
-- **Accessibility**: Add ARIA attributes and keyboard navigation support.
-- **Testing**: Write unit tests for PDF generation, download, and semester selection.
-- **Dynamic Fee Data**: Allow `feeData` to vary by semester or student.
-- **Cleanup**: Revoke `pdfUrl` when the component unmounts to prevent memory leaks:
-
-```jsx
-useEffect(() => {
-    return () => {
-        if (pdfUrl) URL.revokeObjectURL(pdfUrl);
-    };
-}, [pdfUrl]);
-```

@@ -31,6 +31,18 @@ Retrieves announcements for a specific course.
 4.  Enriches each announcement with faculty details.
 5.  Sorts announcements by date in descending order.
 
+**Key Code Snippet**
+```javascript
+const course = await Course.findOne({ courseCode: courseId });
+const facultyMembers = await Faculty.find({ facultyId: { $in: facultyIds } });
+
+const announcementsWithFaculty = course.announcements.map(announcement => ({
+  ...announcement.toObject(),
+  faculty: facultyLookup[announcement.postedBy] || null
+}));
+```
+
+announcementsWithFaculty.sort((a, b) => new Date(b.date) - new Date(a.date));
 **Output:**
 -   Success (200): Returns course object with enriched announcements.
 -   Error (404/500): Returns error message.
@@ -47,6 +59,21 @@ Adds a new announcement to a course (faculty use).
 2.  Fetches course by course code.
 3.  Creates new announcement object with current date.
 4.  Pushes it to the course's announcement array and saves.
+
+**Key Code Snippet**
+```javascript
+const newAnnouncement = {
+  title,
+  content,
+  importance: importance || 'Medium',
+  date: new Date(),
+  postedBy
+};
+
+course.announcements.push(newAnnouncement);
+await course.save();
+```
+
 
 **Output:**
 -   Success (201): Returns success message and added announcement.
@@ -65,6 +92,25 @@ Updates an existing course announcement (faculty use).
 3.  Updates the relevant fields in the announcement.
 4.  Saves the updated course document.
 
+**Key Code Snippet**
+```javascript
+const announcementIndex = course.announcements.findIndex(
+  ann => ann.id.toString() === announcementId
+);
+
+course.announcements[announcementIndex].title = title;
+course.announcements[announcementIndex].content = content;
+course.announcements[announcementIndex].importance = importance || 'Medium';
+
+if (attachments) {
+  course.announcements[announcementIndex].attachments = attachments;
+}
+
+await course.save();
+
+```
+
+
 **Output:**
 -   Success (200): Returns success message and updated announcement.
 -   Error (400/404/500): Returns error message.
@@ -79,6 +125,18 @@ Deletes a course announcement (faculty use).
 1.  Locates course by course code.
 2.  Finds and removes the announcement by ID from the announcements array.
 3.  Saves the updated course document.
+
+**Key Code Snippet**
+```javascript
+const announcementIndex = course.announcements.findIndex(
+  ann => ann.id.toString() === announcementId
+);
+
+course.announcements.splice(announcementIndex, 1);
+await course.save();
+
+```
+
 
 **Output:**
 -   Success (200): Returns success message.

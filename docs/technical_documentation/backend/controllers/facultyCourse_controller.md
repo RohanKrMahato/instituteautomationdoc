@@ -30,6 +30,13 @@ Fetches all the courses assigned to a specific faculty member.
 3.  Fetches all `FacultyCourse` entries linked to the faculty
 4.  Maps the course codes and fetches corresponding `Course` details
 
+**Key Code Snippet**
+```javascript
+const faculty = await Faculty.findOne({ userId });
+const facultyCourses = await FacultyCourse.find({ facultyId: faculty.userId });
+const courses = await Course.find({ courseCode: { $in: courseCodes } });
+```
+
 **Output:**
 -   Success (200): Returns a list of course objects
 -   Error (400/404/500): Returns appropriate error message
@@ -45,6 +52,19 @@ Retrieves all students registered for a given course.
 1.  Queries `CourseRegistration` for all registrations matching the course
 2.  Populates `rollNo` to fetch student details
 3.  Extracts key fields like `name`, `rollNo`, `program`, `semester` for each student
+
+**Key Code Snippet**
+```javascript
+const registrations = await CourseRegistration.find({ courseCode }).populate({
+  path: 'rollNo',
+  model: Student
+});
+const students = registrations.map((reg) => ({
+  name: reg.rollNo?.userId?.name || "N/A",
+  rollNo: reg.rollNo?.rollNo,
+  // ...other student details
+}));
+```
 
 **Output:**
 -   Success (200): Returns array of student information
@@ -63,6 +83,21 @@ Approves selected student course registrations for a given course.
     -   Fetches their pending registration from `CourseRegistration`
     -   Creates or updates an entry in `StudentCourse` with status "Approved"
     -   Deletes the approved registration from `CourseRegistration`
+
+**Key Code Snippet**
+```javascript
+await StudentCourse.findOneAndUpdate(
+  { courseId: courseCode, rollNo },
+  {
+    $set: {
+      status: 'Approved',
+      // ...other fields
+    }
+  },
+  { upsert: true }
+);
+await CourseRegistration.deleteOne({ courseCode, rollNo });
+```
 
 **Output:**
 -   Success (200): Returns success message

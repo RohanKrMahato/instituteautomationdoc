@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `TimeTable` component is a React-based front-end module designed to display a weekly timetable for an academic institution (e.g., IIT Guwahati). It visualizes course schedules across days (Monday to Friday) and time slots (8:00 AM to 5:55 PM). The component uses a static dataset of courses with assigned slots and employs **Tailwind CSS** for styling to create a responsive and visually appealing table. The timetable supports both regular lecture slots (e.g., A, B, C) and lab slots (e.g., AL1, ML1) that span multiple time periods.
+The `TimeTable` component is a React-based front-end module designed to display a weekly timetable in our  academic institution. It visualizes course schedules across days (Monday to Friday) and time slots (8:00 AM to 5:55 PM). The component uses a static dataset of courses with assigned slots and employs **Tailwind CSS** for styling to create a responsive and visually appealing table. The timetable supports both regular lecture slots (e.g., A, B, C) and lab slots (e.g., AL1, ML1) that span multiple time periods.
 
 ## Dependencies
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `AssignmentLanding` component is a React-based front-end module designed to serve as the entry point for managing assignments at an academic institution (e.g., IIT Guwahati). It displays a list of courses for the logged-in user, with role-based actions (faculty can create/view assignments, students can view assignments). The component uses **React Router** for navigation, **React Context** for role-based logic, **Fetch API** for retrieving course data, and **Tailwind CSS** for styling, providing a responsive and user-friendly interface.
+The `AssignmentLanding` component is a React-based front-end module designed to serve as the entry point for managing assignments at IIT Guwahati. It displays a list of courses for the logged-in user, with role-based actions (faculty can create/view assignments, students can view assignments). The component uses **React Router** for navigation, **React Context** for role-based logic, **Fetch API** for retrieving course data, and **Tailwind CSS** for styling, providing a responsive and user-friendly interface.
 
 ## Dependencies
 

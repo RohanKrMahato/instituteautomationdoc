@@ -39,6 +39,36 @@ Creates a course along with faculty and program-semester mappings.
     -   Creates a new `FacultyCourse` entry for each.
     -   For every semester in the configuration, creates a `ProgramCourseMapping`.
 
+    
+**Key Code Snippet**
+```javascript
+let course = await Course.findOne({ courseCode });
+if (!course) {
+  course = new Course({ courseCode, department:courseDepartment, courseName, maxIntake, slot, credits });
+  await course.save();
+}
+
+// faculty course mapping
+const facultyCourse = new FacultyCourse({
+  facultyId: faculty,
+  courseCode,
+  year,
+  session
+});
+await facultyCourse.save();
+
+//Program setter mapping
+const programMapping = new ProgramCourseMapping({
+  courseCode,
+  program,
+  department,
+  year,
+  semester:semester[0],
+  type
+});
+await programMapping.save();
+```
+
 **Output:**
 -   Success (200): Confirmation message indicating all data saved.
 -   Error (500): Internal server error during any DB operation.

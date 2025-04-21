@@ -31,6 +31,16 @@ Creates a new complaint in the system.
 3. Creates a new Complaint document with the user's data
 4. Saves the complaint to the database
 
+**Key Code Snippet**
+```javascript
+const buffer = Buffer.from(image, 'base64');
+await fs.writeFile(path.join(process.cwd(), 'uploads/complaints', filePath), buffer);
+
+const complaint = new Complaint({ ...req.body, userId: req.user.userId, imageUrls: imageNames });
+await complaint.save();
+
+```
+
 **Output:**
 - Success (201): Returns message and complaint object
 - Error (500): Returns error message
@@ -51,6 +61,12 @@ Retrieves complaints created by the authenticated user with pagination.
 2. Queries the database for complaints matching the user's ID
 3. Calculates pagination metadata
 
+**Key Code Snippet**
+```javascript
+const complaints = await Complaint.find({ userId }).skip(skip).limit(limit).sort({ createdAt: -1 });
+
+```
+
 **Output:**
 - Success (200): Returns complaints array and pagination information
 - Error (500): Returns error message
@@ -67,6 +83,17 @@ Deletes a user's complaint if it's not already resolved.
 2. Checks if complaint is in "Resolved" status (preventing deletion)
 3. Deletes any associated image files from the filesystem
 4. Removes the complaint from the database
+
+**Key Code Snippet**
+```javascript
+if (complaint.userId.toString() !== userId) return res.status(403).json({ message: "User don't have access" });
+
+for (const imagePath of complaint.imageUrls) {
+  await fs.unlink(path.join(process.cwd(), 'uploads/complaints', imagePath));
+}
+await Complaint.findByIdAndDelete(complaintId);
+
+```
 
 **Output:**
 - Success (200): Returns success message
@@ -90,6 +117,13 @@ Retrieves all complaints in the system (admin only).
 2. Extracts pagination parameters
 3. Retrieves paginated complaints from the database
 
+**Key Code Snippet**
+```javascript
+const admin = await Admin.findOne({ email: req.user.email });
+const complaints = await Complaint.find().skip(skip).limit(limit).sort({ createdAt: -1 });
+
+```
+
 **Output:**
 - Success (200): Returns complaints array and pagination information
 - Error (403/500): Returns appropriate error message
@@ -109,6 +143,16 @@ Updates the status of a complaint (admin only).
 2. Updates the complaint's status
 3. If status is changed to "Resolved" and complaint was assigned, updates staff records
 
+**Key Code Snippet**
+```javascript
+const updatedComplaint = await Complaint.findByIdAndUpdate(complaintId, { status: updatedStatus }, { new: true });
+
+if (updatedStatus === 'Resolved' && complaint.assignedStaffId) {
+  await SupportStaff.findByIdAndUpdate(complaint.assignedStaffId, { $pull: { assignedComplaints: complaintId } });
+}
+
+```
+
 **Output:**
 - Success (200): Returns success message and updated complaint
 - Error (400/403/404/500): Returns appropriate error message
@@ -126,6 +170,19 @@ Assigns a complaint to a support staff member (admin only).
 3. If complaint is already assigned, removes it from previous staff's assignments
 4. Updates complaint with staff information and changes status to "In Progress"
 5. Adds complaint to staff's assigned complaints list
+
+**Key Code Snippet**
+```javascript
+if (supportStaff.assignedComplaints.length >= 5) return res.status(400).json({ message: "Support staff is busy" });
+
+await Complaint.findByIdAndUpdate(complaintId, {
+  assignedName: supportStaff.name,
+  assignedStaffId: supportStaffId,
+  status: "In Progress"
+});
+await SupportStaff.findByIdAndUpdate(supportStaffId, { $addToSet: { assignedComplaints: complaintId } });
+
+```
 
 **Output:**
 - Success (200): Returns success message and updated complaint
@@ -178,6 +235,13 @@ Creates a new support staff member (admin only).
 2. Creates a new SupportStaff document
 3. Saves the staff to the database
 
+**Key Code Snippet**
+```javascript
+const supportStaff = new SupportStaff(req.body);
+await supportStaff.save();
+
+```
+
 **Output:**
 - Success (201): Returns success message and staff object
 - Error (403/500): Returns appropriate error message
@@ -193,6 +257,12 @@ Removes a support staff member from the system (admin only).
 1. Verifies the requesting user is an admin
 2. Deletes the support staff document from the database
 
+**Key Code Snippet**
+```javascript
+await SupportStaff.findByIdAndDelete(req.body.supportStaffId);
+
+```
+
 **Output:**
 - Success (200): Returns success message
 - Error (403/404/500): Returns appropriate error message
@@ -206,6 +276,12 @@ Retrieves all support staff in the system (admin only).
 **Process:**
 1. Verifies the requesting user is an admin
 2. Retrieves all support staff from the database
+
+**Key Code Snippet**
+```javascript
+const supportStaff = await SupportStaff.find();
+
+```
 
 **Output:**
 - Success (200): Returns success message and staff array
@@ -222,6 +298,30 @@ Retrieves support staff filtered by category and subcategory (admin only).
 1. Verifies the requesting user is an admin
 2. Queries the database for staff matching the category/subcategory criteria
 3. Sorts results by number of assigned complaints
+
+**Key Code Snippet**
+```javascript
+const supportStaff = await SupportStaff.find({
+  $and: [
+    { $expr: { $lt: [{ $size: { $ifNull: ["$assignedComplaints", []] } }, 5] } },
+    {
+      $or: [
+        { categories: { $in: [category] } },
+        { categories: { $size: 0 } },
+        { categories: { $exists: false } }
+      ]
+    },
+    {
+      $or: [
+        { subCategories: { $in: [subCategory] } },
+        { subCategories: { $size: 0 } },
+        { subCategories: { $exists: false } }
+      ]
+    }
+  ]
+});
+
+```
 
 **Output:**
 - Success (200): Returns success message and filtered staff array
@@ -242,6 +342,12 @@ Updates a support staff's availability status (admin only).
 **Process:**
 1. Verifies inputs are valid
 2. Updates the staff's availability status in the database
+
+**Key Code Snippet**
+```javascript
+await SupportStaff.findByIdAndUpdate(supportStaffId, { isAvailable }, { new: true });
+
+```
 
 **Output:**
 - Success (200): Returns success message and updated staff object

@@ -31,6 +31,18 @@ Submits a hostel leave request for a student.
 5.  Creates a leave request with status `Pending`
 6.  Saves to the `HostelLeave` collection
 
+**Key Code Snippet**
+```javascript
+const leaveRequest = {
+    rollNo: student.rollNo,
+    startDate,
+    endDate,
+    reason,
+    status: 'Pending'
+};
+await HostelLeave.create(leaveRequest);
+```
+
 **Output:**
 -   Success (200): Confirmation message
 -   Error (400/404/500): Appropriate error response
@@ -46,6 +58,11 @@ Fetches leave requests for a specific student.
 1.  Finds student by `userId`
 2.  Queries `HostelLeave` by `rollNo`
 3.  Returns list of leave records
+
+**Key Code Snippet**
+```javascript
+const leaves = await HostelLeave.find({ rollNo: student.rollNo });
+```
 
 **Output:**
 -   Success (200): Array of leave requests
@@ -76,6 +93,11 @@ Updates the status of a specific leave request.
 1.  Updates the `status` field of the leave record
 2.  Returns updated record
 
+**Key Code Snippet**
+```javascript
+const leave = await HostelLeave.findByIdAndUpdate(leaveId, { status }, { new: true });
+```
+
 **Output:**
 -   Success (200): Confirmation and updated leave data
 -   Error (404/500): Appropriate error response
@@ -94,6 +116,18 @@ Submits a hostel transfer request for a student.
 2.  Finds student by `rollNo`
 3.  Constructs a `HostelTransfer` document
 4.  Saves the request to the database
+
+**Key Code Snippet**
+```javascript
+const transferRequest = {
+    rollNo: student.rollNo,
+    currentHostel,
+    requestedHostel,
+    reason,
+    status
+};
+await HostelTransfer.create(transferRequest);
+```
 
 **Output:**
 -   Success (200): Confirmation message
@@ -139,97 +173,30 @@ Approves or rejects a specific hostel transfer request and updates the student's
 3.  If approved, makes a PUT request to update the student's hostel info
 4.  Updates the transfer request document with new status and reason
 
+**Key Code Snippet**
+```javascript
+// External API call to get userId
+const response = await axios.get(`http://localhost:8000/api/student/${rollNo}/rollno`);
+
+// Update student hostel if approved
+await axios.put(`http://localhost:8000/api/student/${userId}/profile`, {
+    hostel: newHostel
+});
+
+// Update transfer status
+const request = await HostelTransfer.findByIdAndUpdate(
+    requestId,
+    { status, reason },
+    { new: true }
+);
+```
+
 **Output:**
 -   Success (200): Confirmation and updated transfer request
 -   Error (400/404/500): Returns appropriate error message
 
 **External Dependencies:**
 -   Calls local student API to fetch and update user information using `axios`
-
-### Meal Plan Management
-
-#### `getStudentSubscriptionInfo`
-Fetches the current meal subscription and any pending requests for a student.
-
-**Input:**
-- `req.student`: Student information from middleware
-
-**Process:**
-1. Checks if student record exists
-2. Retrieves the current subscription from `MealSubscription`
-3. Checks for any pending requests in `MealPlanRequest`
-4. Returns both subscription and pending request data
-
-**Output:**
-- Success (200): Current subscription and pending request (if any)
-- Error (404/500): Appropriate error response
-
-#### `createMealPlanRequest`
-Submits a request to change a student's meal plan.
-
-**Input:**
-- `req.student`: Student information from middleware
-- `req.body.newPlan`: Requested meal plan type
-
-**Process:**
-1. Validates the requested meal plan
-2. Checks if student already has the same plan
-3. Verifies no pending requests exist
-4. Creates a new meal plan request with 'Pending' status
-
-**Output:**
-- Success (201): Confirmation and request details
-- Error (400/404/500): Appropriate error message
-
-#### `getStudentMealRequestHistory`
-Retrieves the history of meal plan requests for a student.
-
-**Input:**
-- `req.student`: Student information from middleware
-
-**Process:**
-1. Finds all meal plan requests for the student
-2. Sorts them by creation date (newest first)
-
-**Output:**
-- Success (200): Array of meal plan requests
-- Error (404/500): Error message
-
-#### `getSubscriptionRequestsForAdmin`
-Fetches all meal plan subscription requests for admin review.
-
-**Input:**
-- `req.user`: Admin user information
-- `req.query.status`: Optional filter by status
-
-**Process:**
-1. Verifies admin role
-2. Applies status filter if provided
-3. Retrieves requests with student and admin information
-4. Enhances data with student names
-
-**Output:**
-- Success (200): Array of enhanced meal plan requests
-- Error (403/500): Access denied or error message
-
-#### `processSubscriptionRequest`
-Approves or rejects a meal plan subscription request.
-
-**Input:**
-- `req.params.requestId`: Request ID
-- `req.body`: Includes `status`, `rejectionReason`
-- `req.user`: Admin information
-
-**Process:**
-1. Validates admin role
-2. Runs transaction to ensure data consistency
-3. If approved, creates/updates the student's meal subscription
-4. Updates request status with processing information
-
-**Output:**
-- Success (200): Confirmation and updated request details
-- Error (400/403/404/500): Appropriate error response
-
 
 
 ## Error Handling Strategy

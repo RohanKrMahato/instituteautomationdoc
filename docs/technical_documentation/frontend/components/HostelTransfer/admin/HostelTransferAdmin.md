@@ -196,19 +196,3 @@ The UI consists of:
 1. A container with styling
 2. Tab navigation buttons that update the `activeTab` state
 3. Conditional rendering of different components based on the active tab
-
-## Best Practices Implemented
-
-1. **Separation of concerns**: Different request statuses are handled by separate components
-2. **Optimistic UI updates**: Local state is updated immediately after API call for better UX
-3. **Conditional rendering**: Only necessary components are rendered based on the active tab
-4. **Data transformation**: Raw API data is transformed into a more convenient format
-5. **Error and loading states**: Proper handling of loading and error states from API requests
-
-## Potential Improvements
-
-1. Add pagination for handling large numbers of requests
-2. Implement search and filtering capabilities
-3. Add confirmation dialogs for approve/reject actions
-4. Enhance error handling with user notifications
-5. Add data refresh mechanisms (manual refresh button or automatic polling)

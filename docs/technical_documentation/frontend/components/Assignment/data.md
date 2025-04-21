@@ -2,7 +2,7 @@
 
 ## Overview
 
-This module exports two static data arrays, `courses` and `assignments`, which represent course and assignment information for an academic institution (e.g., IIT Guwahati). The data appears to serve as a mock dataset, likely used for development or testing purposes in a front-end application managing course assignments and student submissions. The structure supports course listings and detailed assignment management, including submission tracking.
+This module exports two static data arrays, `courses` and `assignments`, which represent course and assignment information for our academic institution. The data appears to serve as a mock dataset, likely used for development or testing purposes in a front-end application managing course assignments and student submissions. The structure supports course listings and detailed assignment management, including submission tracking.
 
 ## Data Structure
 

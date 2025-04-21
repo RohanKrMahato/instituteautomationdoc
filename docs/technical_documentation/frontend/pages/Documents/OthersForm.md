@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `CombinedFormsPage` component is a React-based front-end module designed to provide access to various academic forms for students and faculty at an institution (e.g., IIT Guwahati). It features a tabbed interface to switch between **Undergraduate Forms** and **General Forms**, displaying each form's details in a table with downloadable links for DOC and PDF formats. The component is styled with **Tailwind CSS** for a responsive and modern user interface.
+The `CombinedFormsPage` component is a React-based front-end module designed to provide access to various academic forms for students and faculty. It features a tabbed interface to switch between **Undergraduate Forms** and **General Forms**, displaying each form's details in a table with downloadable links for DOC and PDF formats. The component is styled with **Tailwind CSS** for a responsive and modern user interface.
 
 ## Dependencies
 
@@ -210,32 +210,3 @@ export default CombinedFormsPage;
 - **External Links**: The `docLink` and `pdfLink` URLs are assumed to be valid and accessible.
 - **No Authentication**: The component does not restrict access to forms; authentication might be handled elsewhere.
 - **Routing**: Assumes integration with a router (e.g., React Router) to render the component at a specific path (e.g., `/documents/othersform`).
-
-## Notes
-
-- **Hardcoded URLs**: The form links point to `iitg.ac.in`, which may need updating if the domain or paths change.
-- **No Error Handling**: The component assumes links are valid; broken links could degrade UX.
-- **Accessibility**: Lacks ARIA attributes for the table and tab buttons; keyboard navigation may be limited.
-- **Static Tabs**: Only two tabs are supported; adding more categories (e.g., postgraduate forms) would require extending the tab logic.
-- **Download Behavior**: Links open in the browser; consider adding `download` attributes for direct downloads:
-
-```jsx
-<a href={form.docLink} download className="...">DOC</a>
-<a href={form.pdfLink} download className="...">PDF</a>
-```
-
-## Future Improvements
-
-- **Dynamic Data**: Fetch forms data from an API to support updates without code changes.
-- **Search/Filter**: Add a search bar or filter to find forms by keyword or category.
-- **Accessibility**:
-  - Add `role="tablist"` and `aria-selected` to tabs.
-  - Use `role="table"` and `scope="col"` for table headers.
-  - Ensure keyboard navigation for tabs and links.
-- **Error Handling**: Display a message or fallback for broken links.
-- **Download Tracking**: Log download events for analytics.
-- **Responsive Enhancements**: Add mobile-friendly features like collapsible rows or smaller text.
-- **Testing**: Write unit tests for tab switching, table rendering, and link accessibility.
-- **Additional Tabs**: Support more form categories (e.g., postgraduate, faculty-specific).
-- **Form Previews**: Allow previewing PDFs before downloading.
-- **Authentication**: Restrict access to certain forms based on user role (e.g., faculty-only forms).

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `BonafidePage` component is a React-based front-end module designed to facilitate the application process for a bonafide certificate for students at an academic institution (e.g., IIT Guwahati). It allows students to submit applications, view their application history, and displays their personal information. The component integrates with **Tanstack Query** for data fetching and mutation, uses **React Hot Toast** for notifications, and is styled with **Tailwind CSS** and **DaisyUI**. It features a tabbed interface for switching between application submission and status views.
+The `BonafidePage` component is a React-based front-end module designed to facilitate the application process for a bonafide certificate. It allows students to submit applications, view their application history, and displays their personal information. The component integrates with **Tanstack Query** for data fetching and mutation, uses **React Hot Toast** for notifications, and is styled with **Tailwind CSS** and **DaisyUI**. It features a tabbed interface for switching between application submission and status views.
 
 ## Dependencies
 

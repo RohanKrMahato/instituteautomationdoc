@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `Unauthorized` component is a React-based front-end module designed to display an access denial message for users attempting to access a restricted page at an academic institution (e.g., IIT Guwahati). It is used in role-based routing scenarios (e.g., within the `AnnouncementWrapper` component) to inform users they lack permission and display their current role. The component is styled with **Tailwind CSS** and uses **React Icons** for visual feedback, providing a clean and user-friendly interface.
+The `Unauthorized` component is a React-based front-end module designed to display an access denial message for users attempting to access a restricted page in our academic institution. It is used in role-based routing scenarios (e.g., within the `AnnouncementWrapper` component) to inform users they lack permission and display their current role. The component is styled with **Tailwind CSS** and uses **React Icons** for visual feedback, providing a clean and user-friendly interface.
 
 ## Dependencies
 

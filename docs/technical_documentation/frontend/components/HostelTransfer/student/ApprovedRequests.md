@@ -57,7 +57,7 @@ Each request object in the `requests` array is expected to have the following pr
 | `rollNo` | Student's roll number |
 | `requestedHostel` | The hostel requested by the student (shown as "current Hostel" in UI) |
 | `currentHostel` | The student's original hostel (shown as "Old Hostel" in UI) |
-| `approvalTimestamp` | When the request was approved (commented out in current implementation) |
+
 
 ## UI Components
 
@@ -154,19 +154,6 @@ The component uses inline SVG icons for each information type:
 - User icon for Application ID
 - Mobile phone/ID card icon for Roll No
 - House icons for hostel information
-
-## Notes and Observations
-
-1. There's a commented-out section for approval timestamp that could be uncommented if that information should be displayed.
-2. There appears to be a minor inconsistency in class naming: `border-base200` is missing a hyphen and should likely be `border-base-200` to match the styling convention.
-3. The labels "current Hostel" and "Old Hostel" might be confusing as they don't clearly indicate which is the destination vs. source hostel.
-4. The component uses a mix of HTML `class` and JSX `className` attributes, which should be standardized to `className` for React.
-
-## Integration Points
-
-- This component expects to be provided with a `requests` array prop from a parent component
-- It would typically be part of a larger hostel transfer management system
-- It complements other components that might handle pending or rejected requests
 
 ## Usage Example
 

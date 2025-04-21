@@ -120,17 +120,6 @@ The component displays several key pieces of information for each rejected reque
 4. **Requested Hostel**: The hostel to which the student requested transfer
 5. **Reason of Rejection**: The administrative reason provided for rejecting the request
 
-### Commented Code
-
-```jsx
-{/* <p className='mt-2'>Rejection Timestamp : {request.rejectionTimestamp}</p> */}
-```
-
-There is a commented-out line that would display a rejection timestamp. This suggests that:
-1. The feature might be planned for future implementation
-2. The timestamp data might not be available in the current data structure
-3. It was deemed unnecessary for the current UI
-
 ## Design Patterns
 
 ### Conditional Rendering
@@ -144,23 +133,3 @@ The component uses CSS Grid with media queries to provide appropriate layouts fo
 
 ### Visual Status Indication
 The component uses background color (`bg-red-100`) to visually communicate the rejected status of the requests.
-
-## Best Practices Implemented
-
-1. **Single Responsibility**: The component focuses solely on displaying rejected requests
-2. **Conditional Rendering**: Provides appropriate feedback when no data exists
-3. **Consistent Design Language**: Uses the same visual patterns as other components in the system
-4. **Accessibility Considerations**: Uses semantic HTML and appropriate text hierarchy
-5. **Responsive Design**: Adapts to different screen sizes with appropriate layouts
-6. **Unique Keys**: Provides unique keys (request.id) for list rendering optimization
-7. **Visual Reinforcement**: Uses color to reinforce the rejected status
-
-## Potential Improvements
-
-1. Add sorting capabilities (e.g., by date, roll number)
-2. Implement filtering options for large numbers of rejected requests
-3. Add pagination for handling large datasets
-4. Include actual rejection timestamps if available
-5. Add the ability to view detailed history of the request
-6. Implement a search function to find specific rejected requests
-7. Add the option to export rejection data for reporting

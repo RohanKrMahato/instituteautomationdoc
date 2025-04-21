@@ -26,6 +26,23 @@ Validates the JWT access token stored in cookies.
 3.  Verifies token using `ACCESS_TOKEN_SECRET`.
 4.  Handles token expiration and invalid signatures.
 
+**Key Code Snippet**
+```javascript
+const accessToken = req?.cookies?.accessToken;
+const user = req?.cookies?.user;
+const parsedUser = JSON.parse(user);
+jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+        if (err instanceof jwt.TokenExpiredError) {
+            return res.status(401).json({ message: "expired access token,please refresh" });
+        }
+        return res.status(403).json({ message: "invalid token" });
+    }
+    req.user = parsedUser;
+    next();
+});
+```
+
 **Output:**
 -   Proceeds to next middleware if valid.
 -   Returns `401` if expired.
@@ -44,6 +61,25 @@ Validates the JWT refresh token from cookies.
 1.  Extracts refresh token from cookies.
 2.  Verifies it using `REFRESH_TOKEN_SECRET`.
 3.  Decodes and attaches user payload and refresh token to the request.
+
+**Key Code Snippet**
+```javascript
+const refreshToken = req.cookies['refreshToken'];
+if (!refreshToken) {
+    return res.status(401).json({ message: "Refresh token not provided" });
+}
+jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+        if (err instanceof jwt.TokenExpiredError) {
+            return res.status(400).json({ message: "expired refresh token,please login again" });
+        }
+        return res.status(403).json({ message: "invalid token,login again" });
+    }
+    req.user = decoded.user;
+    req.refreshToken = refreshToken;
+    next();
+});
+```
 
 **Output:**
 -   Proceeds to next middleware if valid.
@@ -64,6 +100,16 @@ Fetches the user document from the database using email.
 1.  Finds user by lowercase, trimmed email.
 2.  Returns `404` if not found.
 
+**Key Code Snippet**
+```javascript
+const email = req.user.email;
+const user = await User.findOne({ email: email.toLowerCase().trim() });
+if (!user) {
+    return res.status(404).json({ message: "User not found" });
+}
+req.foundUser = user;
+```
+
 **Output:**
 -   Proceeds if user exists.
 -   Returns error if not found or on DB failure.
@@ -80,6 +126,13 @@ Compares the provided refresh token with the one stored in DB.
 
 **Process:**
 1.  Compares the two tokens for equality.
+
+**Key Code Snippet**
+```javascript
+if (req.foundUser.refreshToken !== req.refreshToken) {
+    return res.status(401).json({ message: "Invalid refresh token" });
+}
+```
 
 **Output:**
 -   Proceeds if tokens match.

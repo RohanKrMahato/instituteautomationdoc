@@ -1,7 +1,7 @@
 # AcadAdmin Route
 
 ## Overview
-This document provides comprehensive technical documentation for the Academic Administration API routes defined in `acadAdmin.route.js`. These routes manage document applications, course drop requests, fee structures, and student document access controls.
+This document provides comprehensive technical documentation for the Academic Administration API routes defined in `acadAdmin.route.js`. These routes manage document applications, course drop requests, fee structures, student document access controls, student/faculty management, announcements, and department information.
 
 ## Base URL
 All routes are prefixed with `/api/acadAdmin` (assumed based on typical Express configuration)
@@ -47,6 +47,37 @@ Routes for managing student access to academic documents.
 | PATCH | `/students/:id/document-access` | `updateStudentDocumentAccess` | Update document access for a specific student |
 | POST | `/students/bulk-document-access` | `bulkUpdateDocumentAccess` | Update document access for multiple students at once |
 
+### Student Management
+Routes for managing student records.
+
+| Method | Endpoint | Controller Function | Description |
+|--------|----------|---------------------|-------------|
+| POST | `/students/add-students` | `addStudents` | Add new students to the system |
+
+### Faculty Management
+Routes for managing faculty records.
+
+| Method | Endpoint | Controller Function | Description |
+|--------|----------|---------------------|-------------|
+| POST | `/faculty/add-faculty` | `addFaculty` | Add new faculty members to the system |
+
+### Announcement Management
+Routes for creating and managing administrative announcements.
+
+| Method | Endpoint | Controller Function | Description |
+|--------|----------|---------------------|-------------|
+| GET | `/announcements` | `getAdminAnnouncements` | Get all announcements created by admin |
+| POST | `/announcements/add` | `addAnnouncement` | Create a new announcement |
+| PUT | `/announcements/:announcementId/update` | `updateAnnouncement` | Update an existing announcement |
+| DELETE | `/announcements/:announcementId/delete` | `deleteAnnouncement` | Delete an announcement |
+
+### Department Information
+Routes for accessing department data.
+
+| Method | Endpoint | Controller Function | Description |
+|--------|----------|---------------------|-------------|
+| GET | `/departments` | `getAllDepartments` | Get all departments in the institution |
+
 ## Usage Examples
 
 ### Get All Applications
@@ -74,24 +105,55 @@ fetch('/api/acadAdmin/documents/applications/123456/status', {
   .then(data => console.log(data));
 ```
 
-### Add a Fee Structure
+### Add Students
 ```javascript
 // Example request
-fetch('/api/acadAdmin/feeControl/addFee', {
+fetch('/api/acadAdmin/students/add-students', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    name: 'Tuition Fee 2025',
-    amount: 50000,
-    category: 'Tuition',
-    program: 'Bachelor of Science',
-    academicYear: '2025-2026',
-    items: [
-      { name: 'Base Fee', amount: 40000 },
-      { name: 'Lab Fee', amount: 10000 }
+    students: [
+      {
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        rollNo: 'R2025001',
+        department: 'Computer Science',
+        program: 'Bachelor of Science',
+        semester: 1,
+        contactNo: '1234567890'
+      },
+      {
+        name: 'Jane Smith',
+        email: 'jane.smith@example.com',
+        rollNo: 'R2025002',
+        department: 'Electrical Engineering',
+        program: 'Bachelor of Engineering',
+        semester: 1,
+        contactNo: '0987654321'
+      }
     ]
+  })
+})
+  .then(response => response.json())
+  .then(data => console.log(data));
+```
+
+### Add Announcement
+```javascript
+// Example request
+fetch('/api/acadAdmin/announcements/add', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    title: 'Spring Semester Registration',
+    content: 'Registration for Spring 2025 semester will begin on May 1, 2025.',
+    priority: 'high',
+    audience: ['all'],
+    validUntil: '2025-05-15T23:59:59'
   })
 })
   .then(response => response.json())
@@ -112,3 +174,4 @@ The API returns appropriate HTTP status codes:
 - Implement proper authentication and authorization middleware
 - Validate all input parameters to prevent injection attacks
 - Implement rate limiting to prevent abuse
+- Ensure proper data validation for bulk operations

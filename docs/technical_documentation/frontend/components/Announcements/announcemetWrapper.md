@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `AnnouncementWrapper` component is a React-based front-end module designed to serve as a role-based router for displaying course announcements in an academic institution (e.g., IIT Guwahati). It leverages React's **Context API** to determine the user's role and conditionally renders either the `CourseAnnouncements` component for students, the `FacultyCourseAnnouncements` component for faculty, or an `Unauthorized` component for unrecognized roles. The component also uses **React Router** for navigation.
+The `AnnouncementWrapper` component is a React-based front-end module designed to serve as a role-based router for displaying course announcements at our academic institution automation system. It leverages React's **Context API** to determine the user's role and conditionally renders either the `CourseAnnouncements` component for students, the `FacultyCourseAnnouncements` component for faculty, or an `Unauthorized` component for unrecognized roles. The component also uses **React Router** for navigation.
 
 ## Dependencies
 

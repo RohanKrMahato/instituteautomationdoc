@@ -18,7 +18,6 @@ Each request object in the array should have the following structure:
   rollNo: String,      // Student roll number
   currentHostel: String, // Previous/old hostel name
   requestedHostel: String, // Newly approved hostel name
-  // approvalTimestamp: String/Date // Optional timestamp of when the request was approved (currently commented out)
 }
 ```
 
@@ -89,7 +88,7 @@ Each request is rendered as a card with:
 - A light shadow and border for depth
 - Green background (`bg-green-100`) to indicate approved status
 - A responsive grid layout that changes based on screen size
-- A commented-out section for approval timestamp (which can be uncommented if timestamp data is available)
+
 
 ### Field Display Pattern
 
@@ -155,38 +154,7 @@ const HostelTransferPage = () => {
 export default HostelTransferPage;
 ```
 
-## Implementation Notes
+## Note
 
 1. The component uses Tailwind CSS utility classes for styling.
 2. SVG icons are embedded directly in the JSX for better load performance.
-3. The timestamp display feature is available but commented out - it can be enabled by uncommenting the relevant line and ensuring `approvalTimestamp` is included in the request objects.
-4. The component uses class syntax in some places instead of className, which should be standardized to className for React JSX.
-
-## Technical Considerations
-
-1. **Performance Optimization**: For large lists of approved requests, consider implementing pagination, infinite scrolling, or virtualization techniques.
-2. **Accessibility Improvements**: While the component has good visual hierarchy, it could benefit from additional ARIA attributes and ensuring proper color contrast ratios.
-3. **Prop Validation**: Adding PropTypes or TypeScript interfaces would provide better type safety and documentation.
-4. **Error Handling**: The component assumes all request objects have the required fields. Adding validation or default values would make it more robust.
-5. **CSS Class Consistency**: There's some inconsistency between using `class` and `className` attributes which should be standardized to `className` for React components.
-
-## Code Structure Analysis
-
-The component follows a functional structure with conditional rendering:
-1. Check for empty state and render appropriate message
-2. Render container with mapped request items
-3. For each item, render structured information with consistent design patterns
-
-This structure makes the component easy to understand, maintain, and extend if additional functionality is required in the future.
-
-## Comparison with RejectedRequests Component
-
-The `ApprovedRequests` component is almost identical in structure to the `RejectedRequests` component, with the following key differences:
-
-1. Uses `bg-green-100` background for items (vs. `bg-red-100` in RejectedRequests)
-2. Labels "Old Hostel" instead of "Current Hostel"
-3. Labels "Approved Hostel" instead of "Requested Hostel"
-4. Doesn't include a "Reason of Rejection" field
-5. Uses `approvalTimestamp` (commented out) instead of `rejectionTimestamp`
-
-This consistent structure between components provides a unified user experience while appropriately differentiating between approved and rejected requests.

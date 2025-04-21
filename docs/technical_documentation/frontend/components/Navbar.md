@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `Navbar` component is a React-based front-end module designed to provide a navigation bar for an academic institution's automation system (e.g., IIT Guwahati). It displays the institution's logo, a title ("Institute Automation"), and a logout button. The component integrates with a backend API for logout functionality, uses **React Router** for navigation, **Axios** for HTTP requests, and **Tailwind CSS** for styling. The logout action clears user data and redirects to the login page.
+The `Navbar` component is a React-based front-end module designed to provide a navigation bar for our academic institution's automation system. It displays the institution's logo, a title ("Institute Automation"), and a logout button. The component integrates with a backend API for logout functionality, uses **React Router** for navigation, **Axios** for HTTP requests, and **Tailwind CSS** for styling. The logout action clears user data and redirects to the login page.
 
 ## Dependencies
 

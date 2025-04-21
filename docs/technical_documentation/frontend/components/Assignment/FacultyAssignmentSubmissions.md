@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `FacultyAssignmentSubmissions` component is a React-based front-end module designed to allow faculty members at an academic institution (e.g., IIT Guwahati) to view student submissions for a specific assignment. It fetches assignment details and submission data from a backend API and displays them in a tabular format. The component uses **React Router** for URL parameters, **Fetch API** for data retrieval, and **Tailwind CSS** for styling, providing a clean and responsive user interface.
+The `FacultyAssignmentSubmissions` component is a React-based front-end module designed to allow faculty members at our academic institution to view student submissions for a specific assignment. It fetches assignment details and submission data from a backend API and displays them in a tabular format. The component uses **React Router** for URL parameters, **Fetch API** for data retrieval, and **Tailwind CSS** for styling, providing a clean and responsive user interface.
 
 ## Dependencies
 

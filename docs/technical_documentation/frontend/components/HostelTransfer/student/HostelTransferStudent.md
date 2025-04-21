@@ -435,34 +435,3 @@ This approach:
 2. Handles empty states with friendly messages
 3. Displays the "Apply" button only when appropriate
 4. Renders request details in a consistent format
-
-## Notes and Observations
-
-1. The component manages quite a few state variables. Some refactoring with useReducer might simplify state management.
-
-2. There's some commented-out code that suggests alternative implementation approaches or debugging tools.
-
-3. The gender determination is done implicitly by checking hostel name against a list, which works but might be better handled with explicit gender data from the API.
-
-4. Form validation is simple but could be enhanced with more detailed feedback.
-
-5. The UI uses a consistent design language with Tailwind CSS classes for styling.
-
-6. The tab navigation could be extracted into a reusable component if used elsewhere in the application.
-
-## Usage Example
-
-```jsx
-import HostelTransferStudent from './HostelTransferStudent';
-
-function StudentDashboard() {
-  return (
-    <div className="dashboard-container">
-      <h1>Student Dashboard</h1>
-      <HostelTransferStudent />
-    </div>
-  );
-}
-```
-
-This component is designed to be a self-contained feature that manages its own data fetching, state, and UI rendering, making it easy to integrate into a broader student dashboard interface.

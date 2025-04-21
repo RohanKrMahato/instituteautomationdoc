@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `AssignmentList` component is a React-based front-end module designed to display a list of assignments for a specific course at an academic institution (e.g., IIT Guwahati). It supports role-based functionality, allowing faculty to create, edit, and delete assignments, while students can view assignments. The component fetches course and assignment data using the **Fetch API**, uses **React Router** for navigation, **React Context** for role-based logic, and **Tailwind CSS** for styling, providing a responsive and user-friendly interface.
+The `AssignmentList` component is a React-based front-end module designed to display a list of assignments for a specific course at IIT Guwahati. It supports role-based functionality, allowing faculty to create, edit, and delete assignments, while students can view assignments. The component fetches course and assignment data using the **Fetch API**, uses **React Router** for navigation, **React Context** for role-based logic, and **Tailwind CSS** for styling, providing a responsive and user-friendly interface.
 
 ## Dependencies
 

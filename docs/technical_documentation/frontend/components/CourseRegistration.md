@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `CourseRegistration` component is a React-based front-end module designed to facilitate course registration for students at an academic institution (e.g., IIT Guwahati). It allows users to view and register for core courses, select and register for elective courses, and choose audit courses. The component uses static course data and manages selections with **React state**, styled with **Tailwind CSS** for a clean and responsive interface. The registration functionality is currently a placeholder (buttons are non-functional), indicating a prototype or partial implementation.
+The `CourseRegistration` component is a React-based front-end module designed to facilitate course registration for students in our academic institution. It allows users to view and register for core courses, select and register for elective courses, and choose audit courses. The component uses static course data and manages selections with **React state**, styled with **Tailwind CSS** for a clean and responsive interface. 
 
 ## Dependencies
 

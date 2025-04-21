@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `newRequest` utility is a pre-configured **Axios** instance designed to simplify HTTP requests to a backend API in an academic institution's automation system (e.g., IIT Guwahati). It sets a base URL and enables credential inclusion for authenticated requests, providing a reusable client for API interactions across the application. This utility is likely used in components like `Navbar`, `AssignmentDetail`, or `CourseRegistration` to communicate with the backend.
+The `newRequest` utility is a pre-configured **Axios** instance designed to simplify HTTP requests to a backend API in our academic institution's automation system. It sets a base URL and enables credential inclusion for authenticated requests, providing a reusable client for API interactions across the application. This utility is likely used in components like `Navbar` or `CourseRegistration` to communicate with the backend.
 
 ## Dependencies
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `CreateAssignment` component is a React-based front-end module designed to allow faculty members at an academic institution (e.g., IIT Guwahati) to create new assignments for a specific course. It provides a form to input assignment details (title, description, due date) and submits the data to a backend API. The component uses **React Router** for navigation and URL parameters, **Fetch API** for submitting data, and **Tailwind CSS** for styling, delivering a clean and responsive user interface.
+The `CreateAssignment` component is a React-based front-end module designed to allow faculty members at IIT Guwahati to create new assignments for a specific course. It provides a form to input assignment details (title, description, due date) and submits the data to a backend API. The component uses **React Router** for navigation and URL parameters, **Fetch API** for submitting data, and **Tailwind CSS** for styling, delivering a clean and responsive user interface.
 
 ## Dependencies
 

@@ -29,6 +29,14 @@ Calculates per-course attendance percentage for a student.
 2.  Fetches course names for mapping.
 3.  Computes percentages for each course.
 
+**Key Code Snippet**
+```javascript
+const totalRecords = await Attendance.aggregate([{ $match: { rollNo } }, { $group: { _id: "$courseCode", totalDays: { $sum: 1 } } }]);
+const presentRecords = await Attendance.aggregate([{ $match: { rollNo, isPresent: true, isApproved: true } }, { $group: { _id: "$courseCode", presentDays: { $sum: 1 } } }]);
+const percentage = (presentDays / totalDays) * 100;
+
+```
+
 **Output:**
 -   Success (200): Attendance percentage per course.
 -   Error (400/500): Missing roll number or internal server error.
@@ -44,6 +52,14 @@ Fetches full attendance data and statistics for a specific course.
 1.  Fetches course and student attendance records.
 2.  Computes attendance statistics and events list.
 3.  Builds response with summary and calendar view format.
+
+**Key Code Snippet**
+```javascript
+const attendanceAll = await Attendance.find({ courseCode: courseId, rollNo: studentId });
+const classesAttended = attendanceAll.filter(record => record.isPresent && record.isApproved).length;
+const percentage = ((classesAttended / (classesAttended + classesMissed)) * 100).toFixed(2);
+
+```
 
 **Output:**
 -   Success (200): Full course attendance details.
@@ -61,6 +77,14 @@ Creates an individual attendance record for a student.
 2.  Ensures record for the same date does not already exist.
 3.  Creates a new attendance document.
 
+**Key Code Snippet**
+```javascript
+const existingRecord = await Attendance.findOne({ courseCode, rollNo, date: new Date(date) });
+const newAttendance = new Attendance({ courseCode, rollNo, date: new Date(date), isPresent, isApproved });
+await newAttendance.save();
+
+```
+
 **Output:**
 -   Success (201): Created record.
 -   Error (400/500): Validation or server error.
@@ -76,6 +100,14 @@ Uploads multiple attendance records in bulk.
 1.  Iterates over each record.
 2.  Converts and validates dates.
 3.  Internally calls `createAttendanceRecord` for each.
+
+**Key Code Snippet**
+```javascript
+const [year, month, day] = record.date.split('-');
+const mongoDate = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+await createAttendanceRecord(mockReq, mockRes);
+
+```
 
 **Output:**
 -   Success (200): Summary of successes and failures.
@@ -94,6 +126,14 @@ Fetches faculty-assigned courses along with attendance analytics.
 2.  Aggregates attendance data.
 3.  Computes student count and average attendance.
 
+**Key Code Snippet**
+```javascript
+const attendanceRecords = await Attendance.find({ courseCode: course.courseCode });
+const totalPresent = attendanceRecords.filter(record => record.isPresent && record.isApproved).length;
+const attendancePercentage = totalAttendance > 0 ? (totalPresent / totalAttendance) * 100 : 0;
+
+```
+
 **Output:**
 -   Success (200): Courses with attendance stats.
 -   Error (400/404/500): Faculty not found or internal error.
@@ -109,6 +149,14 @@ Assigns a course to a faculty member.
 2.  Prevents duplicate assignments for session+year.
 3.  Creates and saves course mapping.
 
+**Key Code Snippet**
+```javascript
+const existingCourse = await FacultyCourse.findOne({ facultyId, courseCode, year, session });
+const newFacultyCourse = new FacultyCourse({ facultyId, courseCode, year, session, status: status || 'Ongoing' });
+await newFacultyCourse.save();
+
+```
+
 **Output:**
 -   Success (201): Mapping created.
 -   Error (400/409/500): Validation or internal error.
@@ -122,6 +170,12 @@ Returns roll numbers of students enrolled in a course.
 **Process:**
 1.  Queries `StudentCourse` collection for approved entries.
 2.  Extracts roll numbers.
+
+**Key Code Snippet**
+```javascript
+const enrolledStudents = await StudentCourse.find({ courseId, status: 'Approved' }).select('rollNo -_id');
+
+```
 
 **Output:**
 -   Success (200): List of student roll numbers.
@@ -138,6 +192,19 @@ Updates attendance for a specific student, date, and course.
 1.  Locates the attendance record for the date.
 2.  Updates `isPresent`, `isApproved`, and timestamp.
 
+**Key Code Snippet**
+```javascript
+const attendanceRecord = await Attendance.findOne({
+  courseCode,
+  rollNo,
+  date: { $gte: startOfDay, $lte: endOfDay }
+});
+attendanceRecord.isPresent = isPresent;
+attendanceRecord.isApproved = isApproved;
+await attendanceRecord.save();
+
+```
+
 **Output:**
 -   Success (200): Updated record.
 -   Error (400/404/500): Validation failure or not found.
@@ -153,6 +220,12 @@ Fetches minimal course data for UI dropdowns or listings.
 **Process:**
 1.  Fetches all courses selecting `courseCode` and `courseName`.
 
+**Key Code Snippet**
+```javascript
+const courses = await Course.find({}, 'courseCode courseName');
+
+```
+
 **Output:**
 -   Success (200): Course data.
 -   Error (500): Internal server error.
@@ -166,6 +239,12 @@ Fetches all attendance entries pending approval.
 **Process:**
 1.  Queries for attendance with `isApproved = false`.
 2.  Formats response with `courseId`, `studentId`, `date`, etc.
+
+**Key Code Snippet**
+```javascript
+const pendingApprovals = await Attendance.find({ isApproved: false }).sort({ createdAt: -1 });
+
+```
 
 **Output:**
 -   Success (200): List of unapproved entries.
@@ -181,6 +260,16 @@ Approves a specific attendance record.
 1.  Converts date into `startOfDay` and `endOfDay`.
 2.  Updates the matching record to `isApproved = true`.
 
+**Key Code Snippet**
+```javascript
+const attendanceRecord = await Attendance.findOneAndUpdate(
+  { courseCode, rollNo, date: { $gte: startOfDay, $lte: endOfDay } },
+  { isApproved: true, updatedAt: Date.now() },
+  { new: true }
+);
+
+```
+
 **Output:**
 -   Success (200): Updated record.
 -   Error (400/404/500): Validation or internal error.
@@ -193,6 +282,11 @@ Returns all registered student roll numbers.
 
 **Process:**
 1.  Queries the `Student` collection and selects `rollNo`.
+
+**Key Code Snippet**
+```javascript
+const students = await Student.find({}, 'rollNo');
+```
 
 **Output:**
 -   Success (200): List of roll numbers.

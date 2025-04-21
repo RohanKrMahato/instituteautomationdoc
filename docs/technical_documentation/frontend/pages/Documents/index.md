@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `Documents` component is a React-based front-end module designed to serve as a navigation hub for various document-related functionalities within an academic institution's portal (e.g., IIT Guwahati). It displays a grid of document options when accessed directly at the `/documents` route and renders child routes (via `<Outlet />`) for specific document pages. The component uses **React Router** for navigation and is styled with **Tailwind CSS** for a responsive, modern UI. It also incorporates **React Icons** for visual enhancement.
+The `Documents` component is a React-based front-end module designed to serve as a navigation hub for various document-related functionalities. It displays a grid of document options when accessed directly at the `/documents` route and renders child routes (via `<Outlet />`) for specific document pages. The component uses **React Router** for navigation and is styled with **Tailwind CSS** for a responsive, modern UI. It also incorporates **React Icons** for visual enhancement.
 
 ## Dependencies
 
@@ -168,16 +168,3 @@ export default Documents;
 - **Accessibility**: Lacks ARIA attributes for the clickable cards and keyboard navigation support.
 - **Title Consistency**: The title "Documents" is hardcoded; consider making it configurable via props or context.
 - **Outlet Styling**: The `<Outlet />` container has minimal styling (`p-6`); child routes are responsible for their own layout.
-
-## Future Improvements
-
-- **Dynamic Documents**: Fetch the `documents` array from an API or configuration file.
-- **Accessibility**:
-  - Add `role="button"` and `tabIndex={0}` to cards for keyboard navigation.
-  - Include ARIA labels (e.g., `aria-label="Navigate to ${doc.title}"`).
-- **Error Handling**: Display a fallback UI for invalid sub-routes (e.g., 404 page).
-- **Active Route Highlighting**: Highlight the current document in the grid if revisited.
-- **Testing**: Write unit tests for navigation, grid rendering, and child route rendering.
-- **Animation Enhancements**: Add subtle animations for card appearance (e.g., fade-in).
-- **Search/Filter**: Add a search bar or filter for documents if the list grows large.
-- **Back Button**: Include a "Back to Documents" button in child routes for better UX.

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `convertImageToBase64` utility is a JavaScript function designed to convert an image file into a Base64-encoded string. It is implemented as a Promise-based function that uses the `FileReader` API to read the file and extract the Base64 data, stripping the data URL prefix. This utility is likely used in a web application (e.g., an academic automation system for IIT Guwahati) to handle image uploads, such as profile pictures or assignment submissions, for transmission to a backend API.
+The `convertImageToBase64` utility is a JavaScript function designed to convert an image file into a Base64-encoded string. It is implemented as a Promise-based function that uses the `FileReader` API to read the file and extract the Base64 data, stripping the data URL prefix. This utility is used in our web application to handle image uploads, such as profile pictures or assignment submission.
 
 ## Dependencies
 

@@ -27,7 +27,6 @@ import { FaUtensils } from 'react-icons/fa';
 - React and its `useContext` hook for accessing context data
 - Child components for student and admin interfaces
 - `RoleContext` for role-based access control
-- Font Awesome icon (though `FaUtensils` is imported but not used in the code)
 
 ### Component Breakdown
 
@@ -79,13 +78,13 @@ All views include:
 
 - Rendered when role is `'student'`
 - Loads the `HostelTransferStudent` component
-- This component (imported but not shown in the provided code) would handle student-specific transfer request functionality
+- This component would handle student-specific transfer request functionality
 
 ### Admin View
 
 - Rendered when role is `'nonAcadAdmin'`
 - Loads the `HostelTransferAdmin` component
-- This component (imported but not shown in the provided code) would handle administrative operations like approving/rejecting requests
+- This component would handle administrative operations like approving/rejecting requests
 
 ### Unauthorized View
 
@@ -104,19 +103,8 @@ The component uses React's Context API to determine the user's role:
 const { role } = useContext(RoleContext);
 ```
 
-This retrieves the current user role from the `RoleContext` that must be provided higher in the component tree.
+This retrieves the current user role from the `RoleContext` that is provided higher in the component tree.
 
 The component then uses conditional rendering to show the appropriate interface. For authorized users, it renders the header and a role-specific component. For unauthorized users, it renders the header and an access denied message.
 
 Each interface is wrapped in a container for consistent spacing and layout.
-
-## Integration Points
-
-- **RoleContext**: The component expects to be nested within a `RoleContext.Provider` that supplies the current user role
-- **Child Components**: Relies on `HostelTransferStudent` and `HostelTransferAdmin` components for role-specific functionality
-
-## Notes
-
-- There's an unused import (`FaUtensils`) that should be removed
-- The component assumes the existence of `HostelTransferStudent` and `HostelTransferAdmin` components
-- The code follows a modular approach, separating concerns between different user roles

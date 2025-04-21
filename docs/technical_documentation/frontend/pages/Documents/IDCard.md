@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `IDCardPage` component is a React-based front-end module designed to generate and preview a student ID card in PDF format for an academic institution (e.g., IIT Guwahati). It fetches student data from an API, displays student information, generates a PDF ID card using `@react-pdf/renderer`, and allows users to download the PDF. The component is styled with **Tailwind CSS**, uses **Tanstack Query** for data fetching, and is wrapped in a custom `DocumentLayout` component for consistent page structure.
+The `IDCardPage` component is a React-based front-end module designed to generate and preview a student ID card in PDF format. It fetches student data from an API, displays student information, generates a PDF ID card using `@react-pdf/renderer`, and allows users to download the PDF. The component is styled with **Tailwind CSS**, uses **Tanstack Query** for data fetching, and is wrapped in a custom `DocumentLayout` component for consistent page structure.
 
 ## Dependencies
 
@@ -297,29 +297,7 @@ return (
 - **localStorage**: Stores `currentUser` with a `user.userId` field.
 
 ## Notes
-
-- **Title Mismatch**: The `DocumentLayout` title is set to "Bonafide Certificate" (likely a typo; should be "Student ID Card").
 - **Error Handling**: Logs PDF generation errors to the console but lacks user-facing error messages.
 - **Static Data**: `validUntil` is hardcoded; consider fetching it dynamically.
 - **Unused State**: `pdfBlob` is set but not used (download uses `pdfUrl` directly).
 - **Security**: Assumes `userId` is validated server-side; ensure `localStorage` data is secure.
-
-## Future Improvements
-
-- **Error UI**: Display user-friendly error messages for PDF generation failures (e.g., toast notifications).
-- **Dynamic ValidUntil**: Fetch the `validUntil` date from the API or calculate it dynamically.
-- **Cleanup**: Revoke `pdfUrl` on component unmount to prevent memory leaks:
-
-```jsx
-useEffect(() => {
-    return () => {
-        if (pdfUrl) URL.revokeObjectURL(pdfUrl);
-    };
-}, [pdfUrl]);
-```
-
-- **Validation**: Add checks for incomplete student data before generating the PDF.
-- **Accessibility**: Add ARIA attributes and keyboard navigation support.
-- **Testing**: Write unit tests for data fetching, PDF generation, and download functionality.
-- **Performance**: Optimize PDF generation for large datasets or complex `IDCardPDF` layouts.
-- **Download Handler**: Simplify by removing `pdfBlob` and using `pdfUrl` consistently.

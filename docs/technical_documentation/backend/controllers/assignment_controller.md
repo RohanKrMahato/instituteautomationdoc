@@ -32,6 +32,15 @@ Fetches all ongoing courses assigned to a faculty.
 2.  Finds all ongoing course mappings from `FacultyCourse`.
 3.  Fetches course details from `Course`.
 
+**Key Code Snippet**
+```javascript
+const facultyCourses = await FacultyCourse.find({ facultyId: userId, status: "Ongoing" });
+const courseCodes = facultyCourses.map(fc => fc.courseCode);
+const courses = await Course.find({ courseCode: { $in: courseCodes } });
+
+```
+
+
 **Output:**
 -   Success (200): List of courses.
 -   Error (404/500): Returns error message.
@@ -47,6 +56,13 @@ Fetches all approved courses a student is enrolled in.
 2.  Retrieves approved course enrollments from `StudentCourse`.
 3.  Fetches course details from `Course`.
 
+**Key Code Snippet**
+```javascript
+const studentCourses = await StudentCourse.find({ rollNo: student.rollNo, status: 'Approved' });
+const courseCodes = studentCourses.map(sc => sc.courseId);
+const courses = await Course.find({ courseCode: { $in: courseCodes } });
+```
+
 **Output:**
 -   Success (200): List of enrolled courses.
 -   Error (404/500): Returns error message.
@@ -59,6 +75,11 @@ Retrieves details of a course using `courseCode`.
 
 **Process:**
 1.  Fetches course using course code.
+
+**Key Code Snippet**
+```javascript
+const course = await Course.findOne({ courseCode });
+```
 
 **Output:**
 -   Success (200): Course data.
@@ -78,6 +99,21 @@ Creates a new assignment for a course.
 2.  Counts current assignments to assign a sequential number.
 3.  Creates and saves new assignment.
 
+
+**Key Code Snippet**
+```javascript
+const assignmentCount = await Assignment.countDocuments({ courseCode: courseId });
+const newAssignment = new Assignment({
+  assignmentNumber: assignmentCount + 1,
+  courseCode: courseId,
+  title,
+  description,
+  dueDate: new Date(dueDate),
+});
+await newAssignment.save();
+
+```
+
 **Output:**
 -   Success (201): Assignment object.
 -   Error (400/500): Returns error message.
@@ -92,6 +128,11 @@ Fetches all assignments of a course.
 1.  Validates course ID.
 2.  Finds assignments using course code.
 
+**Key Code Snippet**
+```javascript
+const assignments = await Assignment.find({ courseCode: courseId });
+```
+
 **Output:**
 -   Success (200): List of assignments.
 -   Error (400/500): Returns error message.
@@ -104,6 +145,16 @@ Fetches details of a specific assignment.
 
 **Process:**
 1.  Finds assignment by course and assignment number.
+
+**Key Code Snippet**
+```javascript
+const assignment = await Assignment.findOne({
+  assignmentNumber: assignmentId,
+  courseCode: courseId,
+});
+
+```
+
 
 **Output:**
 -   Success (200): Assignment object.
@@ -120,6 +171,15 @@ Updates title, description, or due date of an assignment.
 1.  Validates required fields.
 2.  Finds and updates assignment.
 
+**Key Code Snippet**
+```javascript
+const updatedAssignment = await Assignment.findOneAndUpdate(
+  { assignmentNumber: assignmentId, courseCode: courseId },
+  { title, description, dueDate },
+  { new: true }
+);
+```
+
 **Output:**
 -   Success (200): Updated assignment.
 -   Error (400/404/500): Returns error message.
@@ -133,6 +193,14 @@ Deletes a specific assignment.
 **Process:**
 1.  Validates input.
 2.  Deletes assignment using course and assignment number.
+
+**Key Code Snippet**
+```javascript
+const deletedAssignment = await Assignment.findOneAndDelete({
+  assignmentNumber: assignmentId,
+  courseCode: courseId,
+});
+```
 
 **Output:**
 -   Success (200): Deleted assignment object.
@@ -152,6 +220,22 @@ Allows a student to submit an assignment.
 2.  Checks if the student has already submitted.
 3.  Pushes submission with current timestamp.
 
+**Key Code Snippet**
+```javascript
+const alreadySubmitted = assignment.submissions.some(
+  (sub) => sub.studentRollNo === studentRollNo
+);
+
+assignment.submissions.push({
+  studentRollNo,
+  studentName,
+  content,
+  submittedAt: new Date(),
+});
+await assignment.save();
+
+```
+
 **Output:**
 -   Success (200): Confirmation message.
 -   Error (404/409/500): Returns error message.
@@ -166,6 +250,14 @@ Allows a student to undo a submission.
 1.  Finds the assignment.
 2.  Removes the student's submission from the list.
 3.  Saves the assignment.
+
+**Key Code Snippet**
+```javascript
+assignment.submissions = assignment.submissions.filter(
+  (sub) => sub.studentRollNo !== rollNo
+);
+await assignment.save();
+```
 
 **Output:**
 -   Success (200): Confirmation message.
@@ -182,6 +274,11 @@ Fetches student details by user ID.
 **Process:**
 1.  Finds student record using `userId`.
 
+**Key Code Snippet**
+```javascript
+const student = await Student.findOne({ userId });
+```
+
 **Output:**
 -   Success (200): Student object.
 -   Error (404/500): Returns error message.
@@ -194,6 +291,11 @@ Fetches user details from the User collection.
 
 **Process:**
 1.  Finds user document by ID.
+
+**Key Code Snippet**
+```javascript
+const user = await User.findById(userId);
+```
 
 **Output:**
 -   Success (200): User object.
